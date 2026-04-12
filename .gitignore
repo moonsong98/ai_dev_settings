@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Neovim
+nvim/plugin/
+
+# 민감 정보
+claude/credentials*
+claude/.oauth*
+*.key
+*.pem
+
+# 로컬 오버라이드 (git에 올리지 않는 개인 설정)
+nvim/lua/config/local.lua
+tmux/tmux.local.conf
