@@ -15,6 +15,7 @@
 | ripgrep | 13.x | 14.x | 검색 (grep 대체) | |
 | fd | 8.x | 10.x | 파일 찾기 (find 대체) | |
 | fzf | 0.40+ | 0.57 | 퍼지 파인더 | |
+| starship | 1.x | 1.25 | 크로스 셸 프롬프트 | Linux 는 install.sh (no apt/dnf) |
 
 ## Neovim 플러그인 (lazy.nvim)
 
@@ -33,6 +34,9 @@
 | tmux-plugins/tpm | 플러그인 매니저 | |
 | tmux-plugins/tmux-sensible | 합리적 기본값 | |
 | tmux-plugins/tmux-resurrect | 세션 저장/복원 | prefix + C-s / C-r |
+| tmux-plugins/tmux-cpu | CPU/RAM 사용률 (status bar) | `#{cpu_percentage}`, `#{ram_percentage}` |
+| tmux-plugins/tmux-battery | 배터리 (status bar) | `#{battery_icon}`, `#{battery_percentage}` |
+| tmux-plugins/tmux-prefix-highlight | prefix/copy-mode 시각 표시 | `#{prefix_highlight}` |
 
 ## npm 글로벌 패키지
 
