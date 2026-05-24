@@ -10,9 +10,11 @@ autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
     group = external_change,
     pattern = "*",
     callback = function()
-        if vim.fn.mode() ~= "c" then
-            vim.cmd("checktime")
+        -- cmdline 모드 또는 command-line window (q:, q/) 안에서는 :checktime 이 E11 발생 → skip
+        if vim.fn.mode() == "c" or vim.fn.getcmdwintype() ~= "" then
+            return
         end
+        vim.cmd("checktime")
     end,
     desc = "외부 파일 변경 자동 리로드",
 })
