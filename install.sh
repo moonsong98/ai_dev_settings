@@ -100,6 +100,42 @@ link_configs() {
 }
 
 # ─────────────────────────────────────────────
+# oh-my-zsh 프레임워크 + 커뮤니티 플러그인
+# ─────────────────────────────────────────────
+install_oh_my_zsh() {
+    # 프레임워크 본체
+    if [ -d "${HOME}/.oh-my-zsh" ]; then
+        skip "oh-my-zsh 이미 설치됨"
+    else
+        info "oh-my-zsh 설치 중..."
+        # --unattended: 프롬프트 / chsh / 즉시 zsh 실행 모두 skip
+        # --keep-zshrc: 기존 ~/.zshrc 보존 (이미 stow 로 심링크 만들어져 있음)
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc >/dev/null
+        ok "oh-my-zsh 설치 완료"
+    fi
+
+    # 커뮤니티 플러그인 (.zshrc 의 plugins=(...) 가 참조)
+    local custom_dir="${HOME}/.oh-my-zsh/custom/plugins"
+    mkdir -p "$custom_dir"
+
+    if [ -d "${custom_dir}/zsh-autosuggestions" ]; then
+        skip "zsh-autosuggestions 이미 설치됨"
+    else
+        info "zsh-autosuggestions 설치 중..."
+        git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions "${custom_dir}/zsh-autosuggestions"
+        ok "zsh-autosuggestions 설치 완료"
+    fi
+
+    if [ -d "${custom_dir}/zsh-syntax-highlighting" ]; then
+        skip "zsh-syntax-highlighting 이미 설치됨"
+    else
+        info "zsh-syntax-highlighting 설치 중..."
+        git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git "${custom_dir}/zsh-syntax-highlighting"
+        ok "zsh-syntax-highlighting 설치 완료"
+    fi
+}
+
+# ─────────────────────────────────────────────
 # TPM (Tmux Plugin Manager) 설치 + 선언된 플러그인 자동 설치
 # ─────────────────────────────────────────────
 install_tpm() {
@@ -148,6 +184,7 @@ main() {
 
     # 공통 설정
     link_configs
+    install_oh_my_zsh
     install_tpm
 
     # Claude Code (npm 글로벌)
@@ -167,6 +204,7 @@ main() {
     ok "설치 완료!"
     echo ""
     info "다음 단계:"
+    echo "  0. 기본 셸을 zsh 로: chsh -s \"\$(command -v zsh)\"  (root/sudo 권한 필요)"
     echo "  1. 터미널을 재시작하거나 source ~/.zshrc"
     echo "  2. nvim 실행 → lazy.nvim 이 플러그인 자동 설치"
     echo "  3. tmux 실행 → TPM 플러그인은 이미 설치됨 (prefix + I 는 재설치 용도)"

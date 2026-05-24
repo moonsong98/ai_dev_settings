@@ -47,6 +47,10 @@ install_starship_ubuntu() {
     curl -sS https://starship.rs/install.sh | sh -s -- -y
 }
 
+install_zsh_ubuntu() {
+    sudo apt-get install -y zsh
+}
+
 install_build_deps_ubuntu() {
     sudo apt-get install -y git curl unzip build-essential
 }
@@ -64,6 +68,7 @@ install_packages() {
     ensure_cmd "tmux"  install_tmux_ubuntu    "tmux"
     ensure_cmd "node"  install_node_ubuntu    "Node.js"
     ensure_cmd "stow"  install_stow_ubuntu    "GNU Stow"
+    ensure_cmd "zsh"   install_zsh_ubuntu     "zsh"
 
     # 검색 도구
     ensure_cmd "rg"    install_ripgrep_ubuntu "ripgrep"

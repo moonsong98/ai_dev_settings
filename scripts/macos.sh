@@ -37,6 +37,12 @@ install_starship_mac() {
     brew install starship
 }
 
+install_zsh_mac() {
+    # macOS Catalina+ 는 기본 셸이 zsh 라 보통 has_cmd 가 true → 이 함수 호출 안 됨.
+    # 명시적으로 brew zsh 가 필요한 경우 (최신 버전) 만 사용됨.
+    brew install zsh
+}
+
 install_packages() {
     info "=== macOS 패키지 설치 ==="
 
@@ -48,6 +54,7 @@ install_packages() {
     ensure_cmd "tmux"  install_tmux_mac    "tmux"
     ensure_cmd "node"  install_node_mac    "Node.js"
     ensure_cmd "stow"  install_stow_mac    "GNU Stow"
+    ensure_cmd "zsh"   install_zsh_mac     "zsh"
 
     # 검색 도구 (Neovim telescope 등에 필요)
     ensure_cmd "rg"    install_ripgrep_mac "ripgrep"

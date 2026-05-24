@@ -67,6 +67,10 @@ install_starship_centos() {
     curl -sS https://starship.rs/install.sh | sh -s -- -y
 }
 
+install_zsh_centos() {
+    sudo dnf install -y zsh
+}
+
 install_build_deps_centos() {
     sudo dnf groupinstall -y "Development Tools" 2>/dev/null || true
     sudo dnf install -y git curl unzip
@@ -86,6 +90,7 @@ install_packages() {
     ensure_cmd "tmux"  install_tmux_centos    "tmux"
     ensure_cmd "node"  install_node_centos    "Node.js"
     ensure_cmd "stow"  install_stow_centos    "GNU Stow"
+    ensure_cmd "zsh"   install_zsh_centos     "zsh"
 
     # 검색 도구
     ensure_cmd "rg"    install_ripgrep_centos "ripgrep"
