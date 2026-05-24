@@ -1,45 +1,38 @@
 -- plugins/treesitter.lua
--- 언어별 AST 파서 기반 정밀 하이라이트 + 인덴트.
--- 빌드 시 :TSUpdate 가 자동 호출돼 ensure_installed 의 parser 들을 컴파일 (gcc/clang 필요).
+-- nvim-treesitter `main` 브랜치 (master 는 archived + nvim 0.12 의 새 API 와 호환 X).
+-- main 은 라이브러리 형태 — install() 로 parser 설치하고, highlight 은 직접
+-- vim.treesitter.start() 를 FileType 시점에 호출.
 
 return {
     "nvim-treesitter/nvim-treesitter",
-    -- `main` 브랜치는 새 rewrite 중이라 API 가 다름 (configs 모듈 없음).
-    -- legacy 안정판인 master 브랜치 사용.
-    branch = "master",
+    branch = "main",
+    lazy = false,
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-        ensure_installed = {
-            -- 코어 (nvim 자체용)
+    config = function()
+        require("nvim-treesitter").install({
+            -- 코어
             "lua", "vim", "vimdoc", "query", "regex",
             -- 자주 쓰는 언어
             "bash", "python", "javascript", "typescript", "tsx",
-            -- 데이터 / 설정 포맷
+            -- 데이터 / 설정
             "json", "yaml", "toml",
             -- 마크업
             "markdown", "markdown_inline", "html", "css",
-            -- git 관련
+            -- git
             "gitcommit", "gitignore", "diff",
             -- 기타
             "dockerfile", "sql",
-        },
-        -- 새 버퍼에서 parser 가 없으면 자동 설치 (background)
-        auto_install = true,
-        highlight = {
-            enable = true,
-            -- 일부 큰 파일에서 성능 보호: 100KB 이상이면 treesitter 끔
-            disable = function(_, buf)
-                local max_filesize = 100 * 1024
-                local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-                if ok and stats and stats.size > max_filesize then
-                    return true
+        })
+
+        -- 버퍼의 filetype 에 매칭되는 parser 가 있으면 treesitter 하이라이트 켬.
+        -- main 브랜치는 module 시스템이 없어서 사용자가 명시적으로 켜야 함.
+        vim.api.nvim_create_autocmd("FileType", {
+            callback = function(args)
+                local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+                if lang then
+                    pcall(vim.treesitter.start, args.buf, lang)
                 end
             end,
-        },
-        indent = { enable = true },
-    },
-    config = function(_, opts)
-        require("nvim-treesitter.configs").setup(opts)
+        })
     end,
 }

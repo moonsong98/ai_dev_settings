@@ -55,6 +55,16 @@ install_jq_ubuntu() {
     sudo apt-get install -y jq
 }
 
+install_tree_sitter_ubuntu() {
+    # apt 에 tree-sitter CLI 없음 → GitHub 릴리스 바이너리
+    local ver="0.26.9"
+    local url="https://github.com/tree-sitter/tree-sitter/releases/download/v${ver}/tree-sitter-linux-x64.gz"
+    curl -fL "$url" -o /tmp/tree-sitter.gz
+    gunzip -f /tmp/tree-sitter.gz
+    chmod +x /tmp/tree-sitter
+    sudo mv /tmp/tree-sitter /usr/local/bin/tree-sitter
+}
+
 install_build_deps_ubuntu() {
     sudo apt-get install -y git curl unzip build-essential
 }
@@ -74,6 +84,7 @@ install_packages() {
     ensure_cmd "stow"  install_stow_ubuntu    "GNU Stow"
     ensure_cmd "zsh"   install_zsh_ubuntu     "zsh"
     ensure_cmd "jq"    install_jq_ubuntu      "jq"
+    ensure_cmd "tree-sitter" install_tree_sitter_ubuntu "tree-sitter CLI"
 
     # 검색 도구
     ensure_cmd "rg"    install_ripgrep_ubuntu "ripgrep"

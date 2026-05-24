@@ -16,6 +16,7 @@
 | fd | 8.x | 10.x | 파일 찾기 (find 대체) | |
 | fzf | 0.40+ | 0.57 | 퍼지 파인더 | |
 | starship | 1.x | 1.25 | 크로스 셸 프롬프트 | Linux 는 install.sh (no apt/dnf) |
+| tree-sitter (CLI) | 0.20+ | 0.26 | nvim-treesitter `main` 브랜치가 parser 빌드에 사용 | brew `tree-sitter-cli`, Linux 는 GitHub 릴리스 |
 
 ## Neovim 플러그인 (lazy.nvim)
 

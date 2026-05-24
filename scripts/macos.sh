@@ -47,6 +47,10 @@ install_jq_mac() {
     brew install jq
 }
 
+install_tree_sitter_mac() {
+    brew install tree-sitter-cli
+}
+
 install_packages() {
     info "=== macOS 패키지 설치 ==="
 
@@ -60,6 +64,7 @@ install_packages() {
     ensure_cmd "stow"  install_stow_mac    "GNU Stow"
     ensure_cmd "zsh"   install_zsh_mac     "zsh"
     ensure_cmd "jq"    install_jq_mac      "jq"
+    ensure_cmd "tree-sitter" install_tree_sitter_mac "tree-sitter CLI"
 
     # 검색 도구 (Neovim telescope 등에 필요)
     ensure_cmd "rg"    install_ripgrep_mac "ripgrep"

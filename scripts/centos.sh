@@ -75,6 +75,16 @@ install_jq_centos() {
     sudo dnf install -y jq
 }
 
+install_tree_sitter_centos() {
+    # dnf 에 tree-sitter CLI 없음 → GitHub 릴리스 바이너리
+    local ver="0.26.9"
+    local url="https://github.com/tree-sitter/tree-sitter/releases/download/v${ver}/tree-sitter-linux-x64.gz"
+    curl -fL "$url" -o /tmp/tree-sitter.gz
+    gunzip -f /tmp/tree-sitter.gz
+    chmod +x /tmp/tree-sitter
+    sudo mv /tmp/tree-sitter /usr/local/bin/tree-sitter
+}
+
 install_build_deps_centos() {
     sudo dnf groupinstall -y "Development Tools" 2>/dev/null || true
     sudo dnf install -y git curl unzip
@@ -96,6 +106,7 @@ install_packages() {
     ensure_cmd "stow"  install_stow_centos    "GNU Stow"
     ensure_cmd "zsh"   install_zsh_centos     "zsh"
     ensure_cmd "jq"    install_jq_centos      "jq"
+    ensure_cmd "tree-sitter" install_tree_sitter_centos "tree-sitter CLI"
 
     # 검색 도구
     ensure_cmd "rg"    install_ripgrep_centos "ripgrep"
