@@ -33,6 +33,8 @@
 | nvim-treesitter/nvim-treesitter | AST 기반 문법 하이라이트 + 인덴트 | Yes | `master` 브랜치, `:TSUpdate` 로 parser 빌드 |
 | numToStr/Comment.nvim | 주석 토글 (`gcc`, `gc`, `gbc` 등) | Yes | BufReadPost |
 | kylechui/nvim-surround | surrounding 조작 (`cs`, `ds`, `ys`) | Yes | BufReadPost |
+| nvim-lualine/lualine.nvim | 풍성한 statusline | Yes | VeryLazy |
+| nvim-tree/nvim-web-devicons | filetype 아이콘 (Nerd Font) | - | lualine 의 dep |
 
 > 플러그인 정확한 버전은 `nvim/lazy-lock.json` 에서 관리됩니다.
 
