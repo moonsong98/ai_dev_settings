@@ -30,6 +30,7 @@
 | nvim-telescope/telescope.nvim | 퍼지 파인더 (파일/grep/buffer/git/...) | Yes | `Telescope` cmd 시 로드 |
 | nvim-lua/plenary.nvim | telescope 의존성 (lua util) | - | telescope 와 같이 로드 |
 | nvim-telescope/telescope-fzf-native.nvim | C 로 컴파일된 fzf 매처 (성능) | Yes | `make` 빌드 필요 |
+| nvim-treesitter/nvim-treesitter | AST 기반 문법 하이라이트 + 인덴트 | Yes | `master` 브랜치, `:TSUpdate` 로 parser 빌드 |
 
 > 플러그인 정확한 버전은 `nvim/lazy-lock.json` 에서 관리됩니다.
 
