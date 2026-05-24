@@ -32,6 +32,7 @@
 | nvim-telescope/telescope-fzf-native.nvim | C 로 컴파일된 fzf 매처 (성능) | Yes | `make` 빌드 필요 |
 | nvim-treesitter/nvim-treesitter | AST 기반 문법 하이라이트 + 인덴트 | Yes | `master` 브랜치, `:TSUpdate` 로 parser 빌드 |
 | numToStr/Comment.nvim | 주석 토글 (`gcc`, `gc`, `gbc` 등) | Yes | BufReadPost |
+| kylechui/nvim-surround | surrounding 조작 (`cs`, `ds`, `ys`) | Yes | BufReadPost |
 
 > 플러그인 정확한 버전은 `nvim/lazy-lock.json` 에서 관리됩니다.
 

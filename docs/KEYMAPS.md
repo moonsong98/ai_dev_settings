@@ -91,6 +91,19 @@ telescope picker 안에서:
 | `gco` / `gcO` | Normal | 아래/위에 주석 라인 추가하고 insert |
 | `gcA` | Normal | 라인 끝에 주석 추가하고 insert |
 
+### Surround (nvim-surround)
+
+| 키 | 모드 | 동작 |
+|---|---|---|
+| `cs"'` | Normal | `"x"` → `'x'` (change surround) |
+| `cs)]` | Normal | `(x)` → `[x]` |
+| `ds"` | Normal | `"x"` → `x` (delete surround) |
+| `ysiw"` | Normal | `word` → `"word"` (yank surround inner word) |
+| `yss)` | Normal | 라인 전체를 `(...)` 로 |
+| `S"` | Visual | 선택 영역을 `"..."` 로 |
+
+prefix 요약: `cs` change · `ds` delete · `ys` add (yank) · `S` (visual) add
+
 ### Claude Code 연동
 
 | 키 | 모드 | 동작 |
