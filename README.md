@@ -1,24 +1,24 @@
 # dotfiles
 
-Neovim + tmux + Claude Code 크로스 플랫폼 개발 환경.
+A cross-platform development environment for Neovim + tmux + Claude Code.
 
-## 지원 OS
+## Supported OS
 
-| OS | 패키지 매니저 | 상태 |
+| OS | Package Manager | Status |
 |---|---|---|
 | macOS (12+) | Homebrew | ✅ |
 | Ubuntu (20.04+) | apt | ✅ |
 | CentOS 8 / Stream | dnf | ✅ |
 
-## 요구사항
+## Requirements
 
 - Git 2.x+
-- Neovim **≥ 0.10** (install 스크립트가 자동 설치)
+- Neovim **≥ 0.10** (auto-installed by the install script)
 - tmux **≥ 3.2**
-- Node.js **≥ 18** (Claude Code 용)
+- Node.js **≥ 18** (for Claude Code)
 - GNU Stow
 
-## 퀵스타트
+## Quick start
 
 ```bash
 git clone https://github.com/<your-username>/dotfiles.git ~/dotfiles
@@ -26,25 +26,27 @@ cd ~/dotfiles
 ./install.sh
 ```
 
-install.sh 는 OS를 자동 감지하고, 이미 설치된 패키지는 건너뜁니다.
+`install.sh` auto-detects the OS and skips packages that are already installed.
 
-## 구조
+## Layout
 
 ```
 dotfiles/
-├── install.sh              # 엔트리포인트 (OS 자동 감지)
-├── scripts/                # OS별 설치 스크립트
+├── install.sh              # Entry point (OS auto-detect)
+├── scripts/                # Per-OS installer scripts
 ├── nvim/                   # → ~/.config/nvim
 ├── tmux/                   # → ~/.config/tmux
+├── zsh/                    # → ~/.zshrc, ~/.zprofile, ~/.profile
+├── starship/               # → ~/.config/starship.toml
 ├── claude/                 # → ~/.claude
-└── docs/                   # 문서
+└── docs/                   # Documentation
 ```
 
-## 패키지 추가/변경 시
+## Adding or changing a package
 
-1. 설정 파일 수정
-2. `CHANGELOG.md` 에 변경 내역 기록
-3. 브레이킹 체인지라면 `MIGRATION.md` 도 업데이트
-4. Neovim 플러그인 변경 시 `lazy-lock.json` 커밋 포함
+1. Edit the relevant config.
+2. Record the change in `CHANGELOG.md`.
+3. For breaking changes, also update `MIGRATION.md`.
+4. When updating Neovim plugins, commit `lazy-lock.json` along with the change.
 
-자세한 패키지 목록은 [docs/PACKAGES.md](docs/PACKAGES.md) 참고.
+See [docs/PACKAGES.md](docs/PACKAGES.md) for the full package list.
