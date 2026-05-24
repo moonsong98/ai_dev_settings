@@ -82,37 +82,28 @@ link_configs() {
         ok "starship stow 완료"
     }
 
-    # claude → ~/.claude
-    mkdir -p "${HOME}/.claude"
-    # claude 설정은 stow 대신 직접 복사 (디렉토리 구조가 다름)
-    for f in settings.json CLAUDE.md; do
-        if [ -f "${DOTFILES_DIR}/claude/${f}" ]; then
-            if [ ! -f "${HOME}/.claude/${f}" ]; then
-                cp "${DOTFILES_DIR}/claude/${f}" "${HOME}/.claude/${f}"
-                ok "${f} → ~/.claude/${f}"
-            else
-                skip "${HOME}/.claude/${f} 이미 존재 — 건너뜀 (수동 병합 필요)"
+    # claude → ~/.claude (stow with conflict backup)
+    # plugins/marketplaces/gp-settings/ 는 statusline.mjs 가 cache 파일을 쓰는 위치라
+    # 디렉토리가 실재해야 함 (stow 가 디렉토리 자체를 symlink 로 fold 하면 cache 가
+    # repo 안으로 흘러들어가니까). 그래서 미리 만들어 둠.
+    mkdir -p "${HOME}/.claude/plugins/marketplaces/gp-settings"
+    stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' claude 2>/dev/null || {
+        warn "claude stow 충돌 — 기존 dotfile 을 백업합니다."
+        for f in settings.json CLAUDE.md usage-report.py plugins/marketplaces/gp-settings/statusline.mjs; do
+            if [ -e "${HOME}/.claude/${f}" ] && [ ! -L "${HOME}/.claude/${f}" ]; then
+                local backup="${HOME}/.claude/${f}.bak.$(date +%Y%m%d%H%M%S)"
+                mv "${HOME}/.claude/${f}" "${backup}"
+                info "백업: ${HOME}/.claude/${f} → ${backup}"
             fi
-        fi
-    done
-    # statusline.mjs: settings.json 의 statusLine 이 가리키는 Node 스크립트.
-    # PLUGIN_DIR 이 ~/.claude/plugins/marketplaces/gp-settings 로 하드코딩돼있어 그 경로에 설치.
-    # 이미 존재해도 repo 버전이 최신일 수 있으므로 매번 덮어씀.
-    if [ -f "${DOTFILES_DIR}/claude/statusline.mjs" ]; then
-        local hud_dir="${HOME}/.claude/plugins/marketplaces/gp-settings"
-        mkdir -p "$hud_dir"
-        cp "${DOTFILES_DIR}/claude/statusline.mjs" "${hud_dir}/statusline.mjs"
-        chmod +x "${hud_dir}/statusline.mjs"
-        ok "statusline.mjs → ${hud_dir}/"
-    fi
+        done
+        stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' claude
+    }
 
-    # usage-report.py: transcript 누적 비용 리포트. `claude-usage` 로 호출 가능.
-    if [ -f "${DOTFILES_DIR}/claude/usage-report.py" ]; then
-        cp "${DOTFILES_DIR}/claude/usage-report.py" "${HOME}/.claude/usage-report.py"
-        chmod +x "${HOME}/.claude/usage-report.py"
+    # claude-usage CLI 단축 (~/.local/bin 는 ~/.profile 가 PATH 에 추가)
+    if [ -e "${HOME}/.claude/usage-report.py" ]; then
         mkdir -p "${HOME}/.local/bin"
         ln -sf "${HOME}/.claude/usage-report.py" "${HOME}/.local/bin/claude-usage"
-        ok "usage-report.py → ~/.claude/, claude-usage → ~/.local/bin/"
+        ok "claude-usage → ~/.local/bin/"
     fi
 
     ok "심링크 완료"

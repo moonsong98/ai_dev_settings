@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/settings-schema.json",
+  "skipAutoPermissionPrompt": true,
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node $HOME/.claude/plugins/marketplaces/gp-settings/statusline.mjs",
+    "refreshInterval": 5
+  },
+  "editorMode": "vim"
+}
