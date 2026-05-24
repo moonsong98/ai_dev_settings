@@ -14,6 +14,10 @@ return {
         view_options = {
             show_hidden = true,
         },
+        -- oil-git-status 가 두 글자 status code (index + worktree) 를 그릴 자리 확보
+        win_options = {
+            signcolumn = "yes:2",
+        },
         keymaps = {
             -- 우리 `<C-h/j/k/l>` 윈도우 이동과 안 겹치게 oil 내 충돌 키 비활성
             ["<C-h>"] = false,
