@@ -78,6 +78,17 @@ telescope picker 안에서:
 - `<C-x>` 가로 분할로 열기, `<C-v>` 세로 분할, `<C-t>` 새 탭
 - `<C-/>` insert 모드에서 도움말, `?` normal 모드에서
 
+### 주석 (Comment.nvim)
+
+| 키 | 모드 | 동작 |
+|---|---|---|
+| `gcc` | Normal | 현재 라인 주석 토글 |
+| `gbc` | Normal | 블록 주석 토글 |
+| `gc{motion}` | Normal | 모션 범위 주석 (`gcap` 단락, `gc5j` 아래 5줄, `gcG` 끝까지) |
+| `gc` | Visual | 선택 영역 주석 |
+| `gco` / `gcO` | Normal | 아래/위에 주석 라인 추가하고 insert |
+| `gcA` | Normal | 라인 끝에 주석 추가하고 insert |
+
 ### Claude Code 연동
 
 | 키 | 모드 | 동작 |
