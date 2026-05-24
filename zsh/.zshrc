@@ -103,12 +103,10 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# ─── pyenv (있을 때만) ───
-export PATH="$HOME/.pyenv/bin:$PATH"
+# ─── pyenv 인터랙티브 init (PATH 는 ~/.profile 에서) ───
 command -v pyenv >/dev/null 2>&1 && eval "$(pyenv init -)"
 
-# ─── uv (~/.local/bin/env, 있을 때만) ───
-[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
+# uv PATH 는 ~/.profile 에서 처리됨
 
 # ─── iTerm shell integration (Mac, 파일 있을 때만) ───
 [ -f "${HOME}/.iterm2_shell_integration.zsh" ] && source "${HOME}/.iterm2_shell_integration.zsh"
