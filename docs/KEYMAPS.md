@@ -82,7 +82,9 @@ telescope picker 안에서:
 
 | 키 | 모드 | 동작 |
 |---|---|---|
-| `gcc` | Normal | 현재 라인 주석 토글 |
+| `Ctrl+/` | Normal | 현재 라인 주석 토글 (VSCode 스타일) |
+| `Ctrl+/` | Visual | 선택 영역 주석 토글 |
+| `gcc` | Normal | 현재 라인 주석 토글 (vim 표준) |
 | `gbc` | Normal | 블록 주석 토글 |
 | `gc{motion}` | Normal | 모션 범위 주석 (`gcap` 단락, `gc5j` 아래 5줄, `gcG` 끝까지) |
 | `gc` | Visual | 선택 영역 주석 |

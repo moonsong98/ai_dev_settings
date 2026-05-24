@@ -6,4 +6,11 @@ return {
     "numToStr/Comment.nvim",
     event = { "BufReadPost", "BufNewFile" },
     opts = {},
+    -- VSCode 스타일 Ctrl+/ — 일부 터미널은 <C-/>, 다른 일부는 <C-_> 로 보내므로 둘 다 매핑.
+    keys = {
+        { "<C-/>", "gcc", mode = "n", remap = true, desc = "주석 토글 (라인)" },
+        { "<C-_>", "gcc", mode = "n", remap = true, desc = "주석 토글 (라인)" },
+        { "<C-/>", "gc",  mode = "v", remap = true, desc = "주석 토글 (선택)" },
+        { "<C-_>", "gc",  mode = "v", remap = true, desc = "주석 토글 (선택)" },
+    },
 }
