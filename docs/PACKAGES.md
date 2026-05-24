@@ -27,6 +27,9 @@
 | stevearc/oil.nvim | 파일 탐색기 (디렉토리를 버퍼로) | No | `-` / `<leader>e` |
 | refractalize/oil-git-status.nvim | oil 안에서 git status 컬럼 | Yes | User OilEnter |
 | lewis6991/gitsigns.nvim | 사인 컬럼에 git diff + hunk 조작 | Yes | BufReadPre 시 로드 |
+| nvim-telescope/telescope.nvim | 퍼지 파인더 (파일/grep/buffer/git/...) | Yes | `Telescope` cmd 시 로드 |
+| nvim-lua/plenary.nvim | telescope 의존성 (lua util) | - | telescope 와 같이 로드 |
+| nvim-telescope/telescope-fzf-native.nvim | C 로 컴파일된 fzf 매처 (성능) | Yes | `make` 빌드 필요 |
 
 > 플러그인 정확한 버전은 `nvim/lazy-lock.json` 에서 관리됩니다.
 

@@ -55,6 +55,29 @@ oil 버퍼 안에서:
 | `<leader>td` | Normal | 삭제된 라인 인라인 표시 토글 |
 | `ih` | Operator/Visual | hunk 텍스트 오브젝트 (`vih`, `dih`, `yih` 등) |
 
+### Telescope (퍼지 파인더)
+
+| 키 | 동작 |
+|---|---|
+| `<leader>ff` | 파일 찾기 (fd) |
+| `<leader>fg` | 내용 검색 — live grep (rg) |
+| `<leader>fs` | 커서 위 단어 grep |
+| `<leader>fr` | 최근 연 파일 (oldfiles) |
+| `<leader>fb` | 열린 버퍼 전환 |
+| `<leader>fh` | vim help 검색 |
+| `<leader>fk` | 키맵 검색 |
+| `<leader>fc` | 명령어 검색 |
+| `<leader>gb` | git 브랜치 |
+| `<leader>gs` | git 변경 파일 |
+| `<leader>gc` | git 커밋 로그 |
+| `<leader>f.` | 직전 picker 재실행 |
+
+telescope picker 안에서:
+- `<C-n>` / `<C-p>` 또는 `<C-j>` / `<C-k>` 결과 이동
+- `<CR>` 선택
+- `<C-x>` 가로 분할로 열기, `<C-v>` 세로 분할, `<C-t>` 새 탭
+- `<C-/>` insert 모드에서 도움말, `?` normal 모드에서
+
 ### Claude Code 연동
 
 | 키 | 모드 | 동작 |
