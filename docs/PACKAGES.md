@@ -35,6 +35,7 @@
 | kylechui/nvim-surround | surrounding 조작 (`cs`, `ds`, `ys`) | Yes | BufReadPost |
 | nvim-lualine/lualine.nvim | 풍성한 statusline | Yes | VeryLazy |
 | nvim-tree/nvim-web-devicons | filetype 아이콘 (Nerd Font) | - | lualine 의 dep |
+| MeanderingProgrammer/render-markdown.nvim | markdown 인-버퍼 렌더링 | Yes | `ft = markdown` |
 
 > 플러그인 정확한 버전은 `nvim/lazy-lock.json` 에서 관리됩니다.
 
