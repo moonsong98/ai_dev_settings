@@ -3,6 +3,30 @@
 모든 주요 변경사항을 이 파일에 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [2026-05-25] - 레이아웃 · env 정합성 · install.sh 정리 · starship 커스텀
+
+### Added
+- **tmux**: `prefix + C-c` 3-pane 레이아웃 (좌 50% claude · 우상 65% nvim · 우하 35% shell)
+  - 같은 윈도우의 다른 패인은 강제 종료 후 재구성 (멱등)
+- **tmux**: status-left 에 claude HUD 인디케이터 — 세션 내 claude 패인 있으면 녹색 `● claude`
+- **zsh**: `~/.profile` 추가 (POSIX 호환 env) — bash login 도 같은 PATH/env
+  - `.zprofile` 이 `.profile` 을 source
+  - `.zshrc` 의 중복된 pyenv/uv PATH export 제거
+- **starship**: `~/.config/starship.toml` 신규 stow 패키지 (`starship/`)
+  - 2-line powerline-flat 스타일 (┏━ … / ┗━❯)
+  - directory · git branch/status · nodejs/python/rust/golang · cmd_duration
+- **install.sh**:
+  - zsh stow + starship stow 추가
+  - tmux stow 가 `--ignore='plugins'` 적용
+  - TPM 경로를 `~/.config/tmux/plugins/tpm` 으로 갱신
+  - TPM 설치 후 `install_plugins.sh` 자동 실행 (수동 `prefix + I` 불필요)
+
+### Fixed
+- **tmux**: `prefix + C-c` 가 현재 패인을 그대로 더 분할하던 동작을, `kill-pane -a` 로 다른 패인 정리 후 재구성하도록 수정 → 어디서 눌러도 윈도우는 항상 같은 3-pane 모양
+
+### Removed
+- **tmux**: `tmux/.config/tmux/plugins/` 의 고아 git submodule 참조 3개 정리
+
 ## [2026-05-24] - tmux HUD · zsh · starship
 
 ### Added
