@@ -95,6 +95,13 @@ link_configs() {
             fi
         fi
     done
+    # statusline.sh: settings.json 의 statusLine 이 가리키는 스크립트.
+    # 이미 존재해도 repo 버전이 최신일 수 있으므로 매번 덮어씀.
+    if [ -f "${DOTFILES_DIR}/claude/statusline.sh" ]; then
+        cp "${DOTFILES_DIR}/claude/statusline.sh" "${HOME}/.claude/statusline.sh"
+        chmod +x "${HOME}/.claude/statusline.sh"
+        ok "statusline.sh → ~/.claude/statusline.sh"
+    fi
 
     ok "심링크 완료"
 }

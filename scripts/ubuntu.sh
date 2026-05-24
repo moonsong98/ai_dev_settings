@@ -51,6 +51,10 @@ install_zsh_ubuntu() {
     sudo apt-get install -y zsh
 }
 
+install_jq_ubuntu() {
+    sudo apt-get install -y jq
+}
+
 install_build_deps_ubuntu() {
     sudo apt-get install -y git curl unzip build-essential
 }
@@ -69,6 +73,7 @@ install_packages() {
     ensure_cmd "node"  install_node_ubuntu    "Node.js"
     ensure_cmd "stow"  install_stow_ubuntu    "GNU Stow"
     ensure_cmd "zsh"   install_zsh_ubuntu     "zsh"
+    ensure_cmd "jq"    install_jq_ubuntu      "jq"
 
     # 검색 도구
     ensure_cmd "rg"    install_ripgrep_ubuntu "ripgrep"

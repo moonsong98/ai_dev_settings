@@ -20,5 +20,10 @@
   },
   "preferences": {
     "theme": "dark"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "$HOME/.claude/statusline.sh",
+    "refreshInterval": 5
   }
 }
