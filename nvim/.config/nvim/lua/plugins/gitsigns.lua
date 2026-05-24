@@ -9,8 +9,8 @@ return {
         signs = {
             add          = { text = "▎" },
             change       = { text = "▎" },
-            delete       = { text = "" },
-            topdelete    = { text = "" },
+            delete       = { text = "▁" },   -- lower one-eighth block — 라인 아래에 그려진 듯한 느낌
+            topdelete    = { text = "▔" },   -- upper one-eighth block — 라인 위
             changedelete = { text = "▎" },
             untracked    = { text = "▎" },
         },
@@ -35,6 +35,14 @@ return {
             map("<leader>hr", gs.reset_hunk, "reset hunk (변경 되돌리기)")
             map("<leader>hS", gs.stage_buffer, "버퍼 전체 stage")
             map("<leader>hR", gs.reset_buffer, "버퍼 전체 reset")
+
+            -- ─── 추가 ───
+            -- ih 텍스트 오브젝트: vih, dih, yih, cih 처럼 hunk 단위 모션
+            vim.keymap.set({ "o", "x" }, "ih",
+                "<cmd>Gitsigns select_hunk<cr>",
+                { buffer = buffer, desc = "hunk 영역 (텍스트 오브젝트)" })
+            -- 삭제된 라인을 인라인 회색 텍스트로 보여줌 — 무엇이 지워졌는지 확인용
+            map("<leader>td", gs.toggle_deleted, "삭제된 라인 인라인 토글")
         end,
     },
 }

@@ -52,6 +52,8 @@ oil 버퍼 안에서:
 | `<leader>hs` | Normal | hunk stage (= git add) |
 | `<leader>hr` | Normal | hunk reset (변경 되돌리기) |
 | `<leader>hS` / `<leader>hR` | Normal | 버퍼 전체 stage / reset |
+| `<leader>td` | Normal | 삭제된 라인 인라인 표시 토글 |
+| `ih` | Operator/Visual | hunk 텍스트 오브젝트 (`vih`, `dih`, `yih` 등) |
 
 ### Claude Code 연동
 
