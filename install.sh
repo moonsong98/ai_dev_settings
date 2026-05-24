@@ -43,16 +43,31 @@ link_configs() {
 
     mkdir -p "${HOME}/.config"
 
-    # nvim → ~/.config/nvim (stow 패키지 안에 .config/nvim/ 구조)
+    # nvim → ~/.config/nvim
     stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' nvim 2>/dev/null || {
         warn "nvim stow 충돌 — 기존 설정을 백업합니다."
         backup_and_stow "nvim" "${HOME}/.config/nvim"
     }
 
     # tmux → ~/.config/tmux
-    stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' tmux 2>/dev/null || {
+    # plugins/ 는 TPM 이 직접 채우는 디렉토리이므로 stow 대상에서 제외
+    stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' --ignore='plugins' tmux 2>/dev/null || {
         warn "tmux stow 충돌 — 기존 설정을 백업합니다."
         backup_and_stow "tmux" "${HOME}/.config/tmux"
+    }
+
+    # zsh → ~/.zshrc, ~/.zprofile, ~/.profile (개별 dotfile 들)
+    stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' zsh 2>/dev/null || {
+        warn "zsh stow 충돌 — 기존 dotfile 을 백업합니다."
+        for f in .zshrc .zprofile .profile; do
+            if [ -e "${HOME}/${f}" ] && [ ! -L "${HOME}/${f}" ]; then
+                local backup="${HOME}/${f}.bak.$(date +%Y%m%d%H%M%S)"
+                mv "${HOME}/${f}" "${backup}"
+                info "백업: ${HOME}/${f} → ${backup}"
+            fi
+        done
+        stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' zsh
+        ok "zsh stow 완료"
     }
 
     # claude → ~/.claude
@@ -73,17 +88,26 @@ link_configs() {
 }
 
 # ─────────────────────────────────────────────
-# TPM (Tmux Plugin Manager) 설치
+# TPM (Tmux Plugin Manager) 설치 + 선언된 플러그인 자동 설치
 # ─────────────────────────────────────────────
 install_tpm() {
-    local tpm_dir="${HOME}/.tmux/plugins/tpm"
+    local tpm_dir="${HOME}/.config/tmux/plugins/tpm"
     if [ -d "$tpm_dir" ]; then
         skip "TPM 이미 설치됨"
-        return
+    else
+        info "TPM 설치 중..."
+        mkdir -p "$(dirname "$tpm_dir")"
+        git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
+        ok "TPM 설치 완료"
     fi
-    info "TPM 설치 중..."
-    git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
-    ok "TPM 설치 완료 — tmux 실행 후 prefix + I 로 플러그인 설치"
+
+    # tmux.conf 에서 선언한 플러그인을 자동 설치 (멱등)
+    if [ -x "${tpm_dir}/scripts/install_plugins.sh" ]; then
+        info "tmux 플러그인 설치 중..."
+        "${tpm_dir}/scripts/install_plugins.sh" >/dev/null 2>&1 || \
+            warn "tmux 플러그인 설치 실패 — tmux 안에서 prefix + I 로 재시도"
+        ok "tmux 플러그인 설치 완료"
+    fi
 }
 
 # ─────────────────────────────────────────────
@@ -131,9 +155,9 @@ main() {
     ok "설치 완료!"
     echo ""
     info "다음 단계:"
-    echo "  1. 터미널을 재시작하거나 source ~/.bashrc (또는 ~/.zshrc)"
-    echo "  2. nvim 실행 → lazy.nvim이 자동으로 플러그인 설치"
-    echo "  3. tmux 실행 → prefix(C-a) + I 로 TPM 플러그인 설치"
+    echo "  1. 터미널을 재시작하거나 source ~/.zshrc"
+    echo "  2. nvim 실행 → lazy.nvim 이 플러그인 자동 설치"
+    echo "  3. tmux 실행 → TPM 플러그인은 이미 설치됨 (prefix + I 는 재설치 용도)"
     echo "  4. claude 실행 → OAuth 인증"
     echo ""
 }
