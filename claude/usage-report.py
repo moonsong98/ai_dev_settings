@@ -9,10 +9,15 @@ Local-only. No network calls. Pricing tables are hardcoded — update them
 if the published rates change."""
 
 import json
+import os
 import sys
+import time
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+CACHE_PATH = Path.home() / ".cache" / "claude-usage.json"
+CACHE_TTL_SEC = 60
 
 # Per-million-token USD pricing (Anthropic public rates, 2026-Q2 baseline)
 PRICING = {
@@ -84,38 +89,84 @@ def walk_transcripts(base: Path):
                 yield ts, model, cost
 
 
-def main() -> int:
+def compute_aggregates() -> dict:
+    """Walk all transcripts and return totals + per-model + per-day data.
+    Returns serializable dict suitable for caching."""
     base = Path.home() / ".claude" / "projects"
-    if not base.exists():
-        print("No ~/.claude/projects/ directory — nothing to report.")
-        return 0
-
-    now = datetime.now(timezone.utc).astimezone()  # local TZ
+    now = datetime.now(timezone.utc).astimezone()
     today = now.date()
-    week_start = today - timedelta(days=6)         # rolling 7 days, today inclusive
+    week_start = today - timedelta(days=6)
     month_start = today.replace(day=1)
 
     totals = {"today": 0.0, "week": 0.0, "month": 0.0, "all": 0.0}
     by_model: dict[str, float] = defaultdict(float)
-    by_day: dict[object, float] = defaultdict(float)
+    by_day: dict[str, float] = defaultdict(float)
 
-    for ts, model, cost in walk_transcripts(base):
-        local_day = ts.astimezone().date()
-        totals["all"] += cost
-        by_model[model] += cost
-        by_day[local_day] += cost
-        if local_day >= month_start:
-            totals["month"] += cost
-        if local_day >= week_start:
-            totals["week"] += cost
-        if local_day == today:
-            totals["today"] += cost
+    if base.exists():
+        for ts, model, cost in walk_transcripts(base):
+            local_day = ts.astimezone().date()
+            totals["all"] += cost
+            by_model[model] += cost
+            by_day[local_day.isoformat()] += cost
+            if local_day >= month_start:
+                totals["month"] += cost
+            if local_day >= week_start:
+                totals["week"] += cost
+            if local_day == today:
+                totals["today"] += cost
 
+    return {
+        "computed_at": now.isoformat(),
+        "today_date": today.isoformat(),
+        "totals": totals,
+        "by_model": dict(by_model),
+        "by_day": dict(by_day),
+    }
+
+
+def load_cache() -> dict | None:
+    """Return cached aggregates if cache is fresh (< CACHE_TTL_SEC old), else None."""
+    if not CACHE_PATH.exists():
+        return None
+    try:
+        age = time.time() - CACHE_PATH.stat().st_mtime
+        if age >= CACHE_TTL_SEC:
+            return None
+        return json.loads(CACHE_PATH.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def save_cache(data: dict) -> None:
+    try:
+        CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        tmp = CACHE_PATH.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(data))
+        os.replace(tmp, CACHE_PATH)
+    except OSError:
+        pass  # cache is best-effort
+
+
+def get_aggregates(force_refresh: bool = False) -> dict:
+    if not force_refresh:
+        cached = load_cache()
+        if cached is not None:
+            return cached
+    fresh = compute_aggregates()
+    save_cache(fresh)
+    return fresh
+
+
+def print_full_report(data: dict) -> None:
     bold = "\033[1m"
     dim = "\033[2m"
     reset = "\033[0m"
+    totals = data["totals"]
+    by_model = data["by_model"]
+    by_day = data["by_day"]
+    today = datetime.fromisoformat(data["today_date"]).date()
 
-    print(f"{bold}Claude Code usage{reset} {dim}({now.strftime('%Y-%m-%d %H:%M %Z')}){reset}")
+    print(f"{bold}Claude Code usage{reset} {dim}({data['computed_at'][:19].replace('T', ' ')}){reset}")
     print()
     print(f"  Today       ${totals['today']:>8.3f}")
     print(f"  Last 7 days ${totals['week']:>8.3f}")
@@ -133,10 +184,42 @@ def main() -> int:
         print(f"{bold}Last 7 days{reset}")
         for i in range(6, -1, -1):
             day = today - timedelta(days=i)
-            amount = by_day.get(day, 0.0)
+            amount = by_day.get(day.isoformat(), 0.0)
             marker = " ← today" if day == today else ""
             print(f"  {day.isoformat()}  ${amount:>8.3f}{marker}")
 
+
+def print_statusline(data: dict) -> None:
+    """One-line summary for the Claude statusLine HUD.
+    Output is plain text — coloring is done by the caller."""
+    t = data["totals"]
+    # Format: "today $X.XX · month $Y.YY"
+    sys.stdout.write(f"today ${t['today']:.2f} · month ${t['month']:.2f}")
+
+
+def main() -> int:
+    mode = "report"
+    force = False
+    for arg in sys.argv[1:]:
+        if arg == "--statusline":
+            mode = "statusline"
+        elif arg == "--refresh":
+            force = True
+        elif arg in ("-h", "--help"):
+            print("usage: usage-report.py [--statusline] [--refresh]")
+            print("  (default)      full report")
+            print("  --statusline   one-line summary for HUD (cached)")
+            print("  --refresh      force recompute (skip cache)")
+            return 0
+        else:
+            print(f"unknown arg: {arg}", file=sys.stderr)
+            return 2
+
+    data = get_aggregates(force_refresh=force)
+    if mode == "statusline":
+        print_statusline(data)
+    else:
+        print_full_report(data)
     return 0
 
 

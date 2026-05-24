@@ -82,12 +82,20 @@ if [ -n "$effort" ]; then
     seg+=("${ec}effort:${effort}${RESET}")
 fi
 
-# 비용
+# 비용 (현재 세션)
 if [ -n "$cost_usd" ]; then
     cost_fmt="$(printf '%.3f' "$cost_usd" 2>/dev/null || echo "$cost_usd")"
     # 0.000 이면 표시 안 함
     if [ "$cost_fmt" != "0.000" ]; then
         seg+=("${YELLOW}\$${cost_fmt}${RESET}")
+    fi
+fi
+
+# 누적 비용 (오늘 / 이번달) — usage-report.py 의 캐시 (60s TTL) 활용
+if [ -x "$HOME/.claude/usage-report.py" ]; then
+    cum="$("$HOME/.claude/usage-report.py" --statusline 2>/dev/null)"
+    if [ -n "$cum" ]; then
+        seg+=("${MAGENTA}${cum}${RESET}")
     fi
 fi
 
