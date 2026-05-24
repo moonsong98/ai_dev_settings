@@ -103,6 +103,15 @@ link_configs() {
         ok "statusline.sh → ~/.claude/statusline.sh"
     fi
 
+    # usage-report.py: transcript 누적 비용 리포트. `claude-usage` 로 호출 가능.
+    if [ -f "${DOTFILES_DIR}/claude/usage-report.py" ]; then
+        cp "${DOTFILES_DIR}/claude/usage-report.py" "${HOME}/.claude/usage-report.py"
+        chmod +x "${HOME}/.claude/usage-report.py"
+        mkdir -p "${HOME}/.local/bin"
+        ln -sf "${HOME}/.claude/usage-report.py" "${HOME}/.local/bin/claude-usage"
+        ok "usage-report.py → ~/.claude/, claude-usage → ~/.local/bin/"
+    fi
+
     ok "심링크 완료"
 }
 
