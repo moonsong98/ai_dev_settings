@@ -31,6 +31,8 @@ opt.showmode = false
 opt.splitbelow = true
 opt.splitright = true
 opt.mouse = "a"
+-- modified 버퍼 두고 나가려 할 때 E37 대신 "Save? Y/n/c" prompt
+opt.confirm = true
 
 -- ─── 파일 ───
 opt.swapfile = false
