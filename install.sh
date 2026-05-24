@@ -70,6 +70,18 @@ link_configs() {
         ok "zsh stow 완료"
     }
 
+    # starship → ~/.config/starship.toml
+    stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' starship 2>/dev/null || {
+        warn "starship stow 충돌 — 기존 설정을 백업합니다."
+        if [ -e "${HOME}/.config/starship.toml" ] && [ ! -L "${HOME}/.config/starship.toml" ]; then
+            local backup="${HOME}/.config/starship.toml.bak.$(date +%Y%m%d%H%M%S)"
+            mv "${HOME}/.config/starship.toml" "${backup}"
+            info "백업: starship.toml → ${backup}"
+        fi
+        stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' starship
+        ok "starship stow 완료"
+    }
+
     # claude → ~/.claude
     mkdir -p "${HOME}/.claude"
     # claude 설정은 stow 대신 직접 복사 (디렉토리 구조가 다름)
