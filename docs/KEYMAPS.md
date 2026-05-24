@@ -40,6 +40,19 @@ oil 버퍼 안에서:
 - `:w` 저장 → 디스크에 변경 적용
 - `q` 닫기
 
+### Git (gitsigns.nvim)
+
+| 키 | 모드 | 동작 |
+|---|---|---|
+| `]h` / `[h` | Normal | 다음 / 이전 변경 hunk |
+| `<leader>hp` | Normal | 변경 미리보기 (floating) |
+| `<leader>hd` | Normal | diff 보기 (현재 vs HEAD) |
+| `<leader>hb` | Normal | 라인 blame (전체 정보 floating) |
+| `<leader>tb` | Normal | 라인 blame 인라인 토글 |
+| `<leader>hs` | Normal | hunk stage (= git add) |
+| `<leader>hr` | Normal | hunk reset (변경 되돌리기) |
+| `<leader>hS` / `<leader>hR` | Normal | 버퍼 전체 stage / reset |
+
 ### Claude Code 연동
 
 | 키 | 모드 | 동작 |
