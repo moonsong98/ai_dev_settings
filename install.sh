@@ -95,12 +95,15 @@ link_configs() {
             fi
         fi
     done
-    # statusline.sh: settings.json 의 statusLine 이 가리키는 스크립트.
+    # statusline.mjs: settings.json 의 statusLine 이 가리키는 Node 스크립트.
+    # PLUGIN_DIR 이 ~/.claude/plugins/marketplaces/gp-settings 로 하드코딩돼있어 그 경로에 설치.
     # 이미 존재해도 repo 버전이 최신일 수 있으므로 매번 덮어씀.
-    if [ -f "${DOTFILES_DIR}/claude/statusline.sh" ]; then
-        cp "${DOTFILES_DIR}/claude/statusline.sh" "${HOME}/.claude/statusline.sh"
-        chmod +x "${HOME}/.claude/statusline.sh"
-        ok "statusline.sh → ~/.claude/statusline.sh"
+    if [ -f "${DOTFILES_DIR}/claude/statusline.mjs" ]; then
+        local hud_dir="${HOME}/.claude/plugins/marketplaces/gp-settings"
+        mkdir -p "$hud_dir"
+        cp "${DOTFILES_DIR}/claude/statusline.mjs" "${hud_dir}/statusline.mjs"
+        chmod +x "${hud_dir}/statusline.mjs"
+        ok "statusline.mjs → ${hud_dir}/"
     fi
 
     # usage-report.py: transcript 누적 비용 리포트. `claude-usage` 로 호출 가능.

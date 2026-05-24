@@ -23,7 +23,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "$HOME/.claude/statusline.sh",
+    "command": "node $HOME/.claude/plugins/marketplaces/gp-settings/statusline.mjs",
     "refreshInterval": 5
   }
 }
