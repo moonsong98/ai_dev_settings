@@ -24,6 +24,7 @@
 | folke/lazy.nvim | 플러그인 매니저 | - | 부트스트랩 |
 | folke/tokyonight.nvim | 컬러스킴 | No | priority=1000 |
 | folke/which-key.nvim | 키맵 도움말 | Yes | VeryLazy |
+| stevearc/oil.nvim | 파일 탐색기 (디렉토리를 버퍼로) | No | `-` / `<leader>e` |
 
 > 플러그인 정확한 버전은 `nvim/lazy-lock.json` 에서 관리됩니다.
 
