@@ -20,6 +20,8 @@ return {
             ["<C-j>"] = false,
             ["<C-k>"] = false,
             ["<C-l>"] = false,
+            -- vim 관습대로 q 로 닫기 (기본은 <C-c>)
+            ["q"] = "actions.close",
         },
     },
     keys = {
