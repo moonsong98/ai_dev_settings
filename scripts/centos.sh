@@ -62,6 +62,11 @@ install_fzf_centos() {
     sudo ln -sf "${HOME}/.fzf/bin/fzf" /usr/local/bin/fzf
 }
 
+install_starship_centos() {
+    # 공식 install script (정적 바이너리를 /usr/local/bin 에 설치)
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+}
+
 install_build_deps_centos() {
     sudo dnf groupinstall -y "Development Tools" 2>/dev/null || true
     sudo dnf install -y git curl unzip
@@ -86,6 +91,9 @@ install_packages() {
     ensure_cmd "rg"    install_ripgrep_centos "ripgrep"
     ensure_cmd "fd"    install_fd_centos      "fd"
     ensure_cmd "fzf"   install_fzf_centos     "fzf"
+
+    # 프롬프트
+    ensure_cmd "starship" install_starship_centos "starship"
 
     ok "CentOS 패키지 설치 완료"
 }

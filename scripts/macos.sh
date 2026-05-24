@@ -33,6 +33,10 @@ install_fzf_mac() {
     brew install fzf
 }
 
+install_starship_mac() {
+    brew install starship
+}
+
 install_packages() {
     info "=== macOS 패키지 설치 ==="
 
@@ -49,6 +53,9 @@ install_packages() {
     ensure_cmd "rg"    install_ripgrep_mac "ripgrep"
     ensure_cmd "fd"    install_fd_mac      "fd"
     ensure_cmd "fzf"   install_fzf_mac     "fzf"
+
+    # 프롬프트
+    ensure_cmd "starship" install_starship_mac "starship"
 
     ok "macOS 패키지 설치 완료"
 }

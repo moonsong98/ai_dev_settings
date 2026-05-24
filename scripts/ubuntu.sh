@@ -42,6 +42,11 @@ install_fzf_ubuntu() {
     sudo apt-get install -y fzf
 }
 
+install_starship_ubuntu() {
+    # 공식 install script (정적 바이너리를 /usr/local/bin 에 설치)
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+}
+
 install_build_deps_ubuntu() {
     sudo apt-get install -y git curl unzip build-essential
 }
@@ -70,6 +75,9 @@ install_packages() {
     else
         install_fd_ubuntu
     fi
+
+    # 프롬프트
+    ensure_cmd "starship" install_starship_ubuntu "starship"
 
     ok "Ubuntu 패키지 설치 완료"
 }
