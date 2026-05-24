@@ -27,3 +27,14 @@ if [ -d "$HOME/.local/bin" ]; then
 fi
 
 export PATH
+
+# ─── 기본 에디터 (git, crontab, fc, ssh, … 가 모두 참조) ───
+# nvim 우선, 없으면 vim, 그것도 없으면 vi
+if command -v nvim >/dev/null 2>&1; then
+    export EDITOR=nvim
+elif command -v vim >/dev/null 2>&1; then
+    export EDITOR=vim
+else
+    export EDITOR=vi
+fi
+export VISUAL="$EDITOR"
