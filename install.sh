@@ -142,7 +142,11 @@ link_configs() {
     }
 
     # tmux → ~/.config/tmux
-    # plugins/ is populated by TPM at runtime, so it must be excluded from stow.
+    # plugins/ is populated by TPM at runtime — must be excluded from stow.
+    # Pre-create plugins/ as a real directory so stow can't tree-fold
+    # ~/.config/tmux into a single symlink to the repo (which would route
+    # TPM's clones into our working tree, hiding them and breaking updates).
+    mkdir -p "${HOME}/.config/tmux/plugins"
     stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' --ignore='plugins' tmux 2>/dev/null || {
         warn "tmux stow conflict — backing up existing config."
         backup_and_stow "tmux" "${HOME}/.config/tmux"
