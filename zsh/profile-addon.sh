@@ -1,6 +1,7 @@
-# ~/.profile — POSIX 호환 셸 공통 환경 변수
-# bash login (~/.bash_profile fallback) 과 zsh login (.zprofile 에서 source) 모두 읽음.
-# 인터랙티브 전용 설정 (prompt, alias 등) 은 여기 두지 말 것 — 그건 .zshrc / .bashrc.
+# ~/.profile addon — POSIX-compatible login env.
+# Sourced from your real ~/.profile via a managed block written by install.sh.
+# Both bash login (via ~/.bash_profile fallback) and zsh login (.zprofile sources .profile) read this.
+# Do NOT put interactive-only settings (prompt, aliases) here — those go in .zshrc / .bashrc.
 
 # ─── Homebrew (macOS Apple Silicon → Intel) ───
 if [ -x /opt/homebrew/bin/brew ]; then
@@ -9,7 +10,7 @@ elif [ -x /usr/local/bin/brew ]; then
     eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-# ─── pyenv 경로 (init 은 .zshrc 의 인터랙티브 측에서) ───
+# ─── pyenv PATH (interactive `pyenv init` lives in zshrc-addon) ───
 if [ -d "$HOME/.pyenv" ]; then
     export PYENV_ROOT="$HOME/.pyenv"
     case ":$PATH:" in
@@ -18,7 +19,7 @@ if [ -d "$HOME/.pyenv" ]; then
     esac
 fi
 
-# ─── uv / 기타 user-local 바이너리 ───
+# ─── uv / other user-local binaries ───
 if [ -d "$HOME/.local/bin" ]; then
     case ":$PATH:" in
         *":$HOME/.local/bin:"*) ;;
@@ -28,8 +29,8 @@ fi
 
 export PATH
 
-# ─── 기본 에디터 (git, crontab, fc, ssh, … 가 모두 참조) ───
-# nvim 우선, 없으면 vim, 그것도 없으면 vi
+# ─── Default editor (used by git, crontab, fc, ssh, …) ───
+# Prefer nvim, then vim, then vi.
 if command -v nvim >/dev/null 2>&1; then
     export EDITOR=nvim
 elif command -v vim >/dev/null 2>&1; then

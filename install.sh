@@ -6,7 +6,7 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${DOTFILES_DIR}/scripts/common.sh"
 
 # ─────────────────────────────────────────────
-# OS 감지
+# OS detection
 # ─────────────────────────────────────────────
 detect_os() {
     local os=""
@@ -21,14 +21,14 @@ detect_os() {
                     ubuntu|debian)  os="ubuntu" ;;
                     centos|rhel|rocky|alma)  os="centos" ;;
                     *)
-                        warn "알 수 없는 Linux 배포판: $ID — ubuntu 스크립트로 시도합니다."
+                        warn "Unknown Linux distribution: $ID — trying the ubuntu script."
                         os="ubuntu"
                         ;;
                 esac
             fi
             ;;
         *)
-            error "지원하지 않는 OS: $(uname -s)"
+            error "Unsupported OS: $(uname -s)"
             exit 1
             ;;
     esac
@@ -36,140 +36,161 @@ detect_os() {
 }
 
 # ─────────────────────────────────────────────
-# Stow로 심링크 생성
+# Remove any previous zsh stow symlinks the old installer may have created.
+# We now manage zsh via appended managed blocks instead.
+# ─────────────────────────────────────────────
+unlink_legacy_zsh_stow() {
+    for f in .zshrc .zprofile .profile; do
+        local path="${HOME}/${f}"
+        if [ -L "$path" ]; then
+            local target
+            target=$(readlink "$path")
+            # Only unlink symlinks that point into this repo.
+            case "$target" in
+                "${DOTFILES_DIR}"/*|*/ai_dev_settings/*)
+                    info "Unlinking legacy stow symlink: ${path} → ${target}"
+                    rm "$path"
+                    ;;
+            esac
+        fi
+    done
+}
+
+# ─────────────────────────────────────────────
+# Symlink configs via Stow (nvim, tmux, starship, claude)
 # ─────────────────────────────────────────────
 link_configs() {
-    info "심링크 생성 중..."
+    info "Creating symlinks..."
 
     mkdir -p "${HOME}/.config"
 
     # nvim → ~/.config/nvim
     stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' nvim 2>/dev/null || {
-        warn "nvim stow 충돌 — 기존 설정을 백업합니다."
+        warn "nvim stow conflict — backing up existing config."
         backup_and_stow "nvim" "${HOME}/.config/nvim"
     }
 
     # tmux → ~/.config/tmux
-    # plugins/ 는 TPM 이 직접 채우는 디렉토리이므로 stow 대상에서 제외
+    # plugins/ is populated by TPM at runtime, so it must be excluded from stow.
     stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' --ignore='plugins' tmux 2>/dev/null || {
-        warn "tmux stow 충돌 — 기존 설정을 백업합니다."
+        warn "tmux stow conflict — backing up existing config."
         backup_and_stow "tmux" "${HOME}/.config/tmux"
-    }
-
-    # zsh → ~/.zshrc, ~/.zprofile, ~/.profile (개별 dotfile 들)
-    stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' zsh 2>/dev/null || {
-        warn "zsh stow 충돌 — 기존 dotfile 을 백업합니다."
-        for f in .zshrc .zprofile .profile; do
-            if [ -e "${HOME}/${f}" ] && [ ! -L "${HOME}/${f}" ]; then
-                local backup="${HOME}/${f}.bak.$(date +%Y%m%d%H%M%S)"
-                mv "${HOME}/${f}" "${backup}"
-                info "백업: ${HOME}/${f} → ${backup}"
-            fi
-        done
-        stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' zsh
-        ok "zsh stow 완료"
     }
 
     # starship → ~/.config/starship.toml
     stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' starship 2>/dev/null || {
-        warn "starship stow 충돌 — 기존 설정을 백업합니다."
+        warn "starship stow conflict — backing up existing config."
         if [ -e "${HOME}/.config/starship.toml" ] && [ ! -L "${HOME}/.config/starship.toml" ]; then
             local backup="${HOME}/.config/starship.toml.bak.$(date +%Y%m%d%H%M%S)"
             mv "${HOME}/.config/starship.toml" "${backup}"
-            info "백업: starship.toml → ${backup}"
+            info "Backup: starship.toml → ${backup}"
         fi
         stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' starship
-        ok "starship stow 완료"
+        ok "starship stow done"
     }
 
-    # claude → ~/.claude (stow with conflict backup)
-    # plugins/marketplaces/gp-settings/ 는 statusline.mjs 가 cache 파일을 쓰는 위치라
-    # 디렉토리가 실재해야 함 (stow 가 디렉토리 자체를 symlink 로 fold 하면 cache 가
-    # repo 안으로 흘러들어가니까). 그래서 미리 만들어 둠.
+    # claude → ~/.claude
+    # plugins/marketplaces/gp-settings/ is where statusline.mjs caches files; it
+    # must remain a real directory rather than a folded symlink (otherwise the
+    # cache writes leak into the repo). Pre-create it.
     mkdir -p "${HOME}/.claude/plugins/marketplaces/gp-settings"
     stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' claude 2>/dev/null || {
-        warn "claude stow 충돌 — 기존 dotfile 을 백업합니다."
+        warn "claude stow conflict — backing up existing dotfiles."
         for f in settings.json CLAUDE.md usage-report.py plugins/marketplaces/gp-settings/statusline.mjs; do
             if [ -e "${HOME}/.claude/${f}" ] && [ ! -L "${HOME}/.claude/${f}" ]; then
                 local backup="${HOME}/.claude/${f}.bak.$(date +%Y%m%d%H%M%S)"
                 mv "${HOME}/.claude/${f}" "${backup}"
-                info "백업: ${HOME}/.claude/${f} → ${backup}"
+                info "Backup: ${HOME}/.claude/${f} → ${backup}"
             fi
         done
         stow -d "${DOTFILES_DIR}" -t "${HOME}" --ignore='\.DS_Store' claude
     }
 
-    # claude-usage CLI 단축 (~/.local/bin 는 ~/.profile 가 PATH 에 추가)
+    # claude-usage CLI shortcut (~/.local/bin is added to PATH by ~/.profile).
     if [ -e "${HOME}/.claude/usage-report.py" ]; then
         mkdir -p "${HOME}/.local/bin"
         ln -sf "${HOME}/.claude/usage-report.py" "${HOME}/.local/bin/claude-usage"
         ok "claude-usage → ~/.local/bin/"
     fi
 
-    ok "심링크 완료"
+    ok "Symlinks done"
 }
 
 # ─────────────────────────────────────────────
-# oh-my-zsh 프레임워크 + 커뮤니티 플러그인
+# Append (not replace) zsh dotfiles.
+# A managed block is added at the end of each rc file; existing user content
+# is preserved untouched.
+# ─────────────────────────────────────────────
+install_zsh_addons() {
+    info "Installing zsh addons (append mode — your existing rc files are kept)..."
+    unlink_legacy_zsh_stow
+
+    append_managed_block "${HOME}/.profile"  "${DOTFILES_DIR}/zsh/profile-addon.sh"   "posix"
+    append_managed_block "${HOME}/.zprofile" "${DOTFILES_DIR}/zsh/zprofile-addon.sh"  "posix"
+    append_managed_block "${HOME}/.zshrc"    "${DOTFILES_DIR}/zsh/zshrc-addon.zsh"    "zsh"
+}
+
+# ─────────────────────────────────────────────
+# oh-my-zsh framework + community plugins
 # ─────────────────────────────────────────────
 install_oh_my_zsh() {
-    # 프레임워크 본체
+    # Framework itself.
     if [ -d "${HOME}/.oh-my-zsh" ]; then
-        skip "oh-my-zsh 이미 설치됨"
+        skip "oh-my-zsh already installed"
     else
-        info "oh-my-zsh 설치 중..."
-        # --unattended: 프롬프트 / chsh / 즉시 zsh 실행 모두 skip
-        # --keep-zshrc: 기존 ~/.zshrc 보존 (이미 stow 로 심링크 만들어져 있음)
+        info "Installing oh-my-zsh..."
+        # --unattended: skip prompt / chsh / spawning a zsh shell.
+        # --keep-zshrc: keep the user's existing ~/.zshrc.
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc >/dev/null
-        ok "oh-my-zsh 설치 완료"
+        ok "oh-my-zsh installed"
     fi
 
-    # 커뮤니티 플러그인 (.zshrc 의 plugins=(...) 가 참조)
+    # Community plugins (sourced by the managed block in zshrc-addon.zsh).
     local custom_dir="${HOME}/.oh-my-zsh/custom/plugins"
     mkdir -p "$custom_dir"
 
     if [ -d "${custom_dir}/zsh-autosuggestions" ]; then
-        skip "zsh-autosuggestions 이미 설치됨"
+        skip "zsh-autosuggestions already installed"
     else
-        info "zsh-autosuggestions 설치 중..."
+        info "Installing zsh-autosuggestions..."
         git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions "${custom_dir}/zsh-autosuggestions"
-        ok "zsh-autosuggestions 설치 완료"
+        ok "zsh-autosuggestions installed"
     fi
 
     if [ -d "${custom_dir}/zsh-syntax-highlighting" ]; then
-        skip "zsh-syntax-highlighting 이미 설치됨"
+        skip "zsh-syntax-highlighting already installed"
     else
-        info "zsh-syntax-highlighting 설치 중..."
+        info "Installing zsh-syntax-highlighting..."
         git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git "${custom_dir}/zsh-syntax-highlighting"
-        ok "zsh-syntax-highlighting 설치 완료"
+        ok "zsh-syntax-highlighting installed"
     fi
 }
 
 # ─────────────────────────────────────────────
-# TPM (Tmux Plugin Manager) 설치 + 선언된 플러그인 자동 설치
+# TPM (Tmux Plugin Manager) + auto-install declared plugins
 # ─────────────────────────────────────────────
 install_tpm() {
     local tpm_dir="${HOME}/.config/tmux/plugins/tpm"
     if [ -d "$tpm_dir" ]; then
-        skip "TPM 이미 설치됨"
+        skip "TPM already installed"
     else
-        info "TPM 설치 중..."
+        info "Installing TPM..."
         mkdir -p "$(dirname "$tpm_dir")"
         git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
-        ok "TPM 설치 완료"
+        ok "TPM installed"
     fi
 
-    # tmux.conf 에서 선언한 플러그인을 자동 설치 (멱등)
+    # Idempotently install the plugins declared in tmux.conf.
     if [ -x "${tpm_dir}/scripts/install_plugins.sh" ]; then
-        info "tmux 플러그인 설치 중..."
+        info "Installing tmux plugins..."
         "${tpm_dir}/scripts/install_plugins.sh" >/dev/null 2>&1 || \
-            warn "tmux 플러그인 설치 실패 — tmux 안에서 prefix + I 로 재시도"
-        ok "tmux 플러그인 설치 완료"
+            warn "tmux plugin install failed — retry inside tmux with prefix + I"
+        ok "tmux plugins installed"
     fi
 }
 
 # ─────────────────────────────────────────────
-# 메인
+# Main
 # ─────────────────────────────────────────────
 main() {
     echo ""
@@ -181,9 +202,9 @@ main() {
 
     local os
     os=$(detect_os)
-    info "감지된 OS: ${os}"
+    info "Detected OS: ${os}"
 
-    # OS별 패키지 설치
+    # OS-specific package install.
     case "$os" in
         macos)  source "${DOTFILES_DIR}/scripts/macos.sh"  ;;
         ubuntu) source "${DOTFILES_DIR}/scripts/ubuntu.sh" ;;
@@ -192,33 +213,34 @@ main() {
 
     install_packages
 
-    # 공통 설정
+    # Shared config.
     link_configs
+    install_zsh_addons
     install_oh_my_zsh
     install_tpm
 
-    # Claude Code (npm 글로벌)
+    # Claude Code (npm global).
     if has_cmd claude; then
-        skip "Claude Code CLI 이미 설치됨"
+        skip "Claude Code CLI already installed"
     else
         if has_cmd npm; then
-            info "Claude Code CLI 설치 중..."
+            info "Installing Claude Code CLI..."
             npm install -g @anthropic-ai/claude-code
-            ok "Claude Code 설치 완료 — 'claude' 로 인증하세요"
+            ok "Claude Code installed — run 'claude' to authenticate"
         else
-            warn "npm 없음 — Claude Code 수동 설치 필요"
+            warn "npm not found — install Claude Code manually"
         fi
     fi
 
     echo ""
-    ok "설치 완료!"
+    ok "Install complete!"
     echo ""
-    info "다음 단계:"
-    echo "  0. 기본 셸을 zsh 로: chsh -s \"\$(command -v zsh)\"  (root/sudo 권한 필요)"
-    echo "  1. 터미널을 재시작하거나 source ~/.zshrc"
-    echo "  2. nvim 실행 → lazy.nvim 이 플러그인 자동 설치"
-    echo "  3. tmux 실행 → TPM 플러그인은 이미 설치됨 (prefix + I 는 재설치 용도)"
-    echo "  4. claude 실행 → OAuth 인증"
+    info "Next steps:"
+    echo "  0. Make zsh your default shell: chsh -s \"\$(command -v zsh)\"  (needs root/sudo)"
+    echo "  1. Restart your terminal, or: source ~/.zshrc"
+    echo "  2. Launch nvim → lazy.nvim will auto-install plugins"
+    echo "  3. Launch tmux → TPM plugins are already installed (prefix + I only re-installs)"
+    echo "  4. Run 'claude' → OAuth authentication"
     echo ""
 }
 

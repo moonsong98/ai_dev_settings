@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# 공통 유틸리티 함수
+# Shared utility functions for install scripts.
 
 # ─────────────────────────────────────────────
-# 로깅
+# Logging
 # ─────────────────────────────────────────────
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
@@ -17,15 +17,15 @@ skip()  { echo -e "${YELLOW}[SKIP]${NC}  $*"; }
 error() { echo -e "${RED}[ERR]${NC}   $*" >&2; }
 
 # ─────────────────────────────────────────────
-# 체크 헬퍼
+# Check helpers
 # ─────────────────────────────────────────────
 
-# 커맨드 존재 여부
+# Does the command exist?
 has_cmd() {
     command -v "$1" &>/dev/null
 }
 
-# 최소 버전 비교: version_gte "0.10.0" "0.9.5" → true
+# Minimum-version check: version_gte "0.10.0" "0.9.5" → true
 version_gte() {
     local required="$1"
     local current="$2"
@@ -33,18 +33,18 @@ version_gte() {
         | sort -V | head -n1 | grep -qx "$required"
 }
 
-# Neovim 버전 추출
+# Extract Neovim version.
 nvim_version() {
     nvim --version 2>/dev/null | head -1 | grep -oP 'v\K[0-9]+\.[0-9]+\.[0-9]+'
 }
 
-# tmux 버전 추출
+# Extract tmux version.
 tmux_version() {
     tmux -V 2>/dev/null | grep -oP '[0-9]+\.[0-9a-z]+'
 }
 
 # ─────────────────────────────────────────────
-# Stow 헬퍼
+# Stow helpers
 # ─────────────────────────────────────────────
 backup_and_stow() {
     local pkg="$1"
@@ -52,39 +52,94 @@ backup_and_stow() {
     local backup="${target}.bak.$(date +%Y%m%d%H%M%S)"
 
     if [ -e "$target" ]; then
-        info "백업: ${target} → ${backup}"
+        info "Backup: ${target} → ${backup}"
         mv "$target" "$backup"
     fi
 
     stow -d "${DOTFILES_DIR}" -t "$(dirname "$target")" --ignore='\.DS_Store' "$pkg"
-    ok "${pkg} stow 완료"
+    ok "${pkg} stow done"
 }
 
 # ─────────────────────────────────────────────
-# 조건부 설치 래퍼
+# Append-managed-block helpers (used for shell rc files)
+# ─────────────────────────────────────────────
+# Append a sourced managed block to a user rc file. The block is delimited by
+# sentinel comments so subsequent installs can update it in place. The user's
+# existing content is left untouched.
+#
+# Usage: append_managed_block <target_rc_file> <addon_file_to_source> <shell_kind>
+#   shell_kind: "posix" or "zsh" (controls the [ -f ... ] && . syntax)
+append_managed_block() {
+    local target="$1"
+    local addon="$2"
+    local kind="${3:-posix}"
+    local marker_begin="# >>> ai_dev_settings >>>"
+    local marker_end="# <<< ai_dev_settings <<<"
+
+    # Ensure the target file exists.
+    if [ ! -e "$target" ]; then
+        touch "$target"
+    fi
+
+    # If a managed block already exists, strip it so we can replace cleanly.
+    if grep -qF "$marker_begin" "$target"; then
+        # Portable in-place delete between markers (BSD + GNU sed safe).
+        local tmp
+        tmp=$(mktemp)
+        awk -v b="$marker_begin" -v e="$marker_end" '
+            $0 == b {skip=1; next}
+            $0 == e {skip=0; next}
+            !skip {print}
+        ' "$target" > "$tmp"
+        mv "$tmp" "$target"
+        # Trim a trailing blank line if we left one behind.
+        if [ -s "$target" ] && [ -z "$(tail -c1 "$target")" ]; then
+            :
+        fi
+    fi
+
+    # Append the block.
+    {
+        echo ""
+        echo "$marker_begin"
+        echo "# Managed by ai_dev_settings install.sh — edit the source file instead:"
+        echo "#   ${addon}"
+        if [ "$kind" = "zsh" ]; then
+            echo "[ -f \"${addon}\" ] && source \"${addon}\""
+        else
+            echo "[ -f \"${addon}\" ] && . \"${addon}\""
+        fi
+        echo "$marker_end"
+    } >> "$target"
+
+    ok "Appended managed block to ${target}"
+}
+
+# ─────────────────────────────────────────────
+# Conditional install wrappers
 # ─────────────────────────────────────────────
 
-# 커맨드가 없을 때만 설치 함수 실행
+# Run install_fn only when cmd is missing.
 ensure_cmd() {
     local cmd="$1"
     local install_fn="$2"
     local label="${3:-$cmd}"
 
     if has_cmd "$cmd"; then
-        skip "${label} 이미 설치됨 ($(command -v "$cmd"))"
+        skip "${label} already installed ($(command -v "$cmd"))"
     else
-        info "${label} 설치 중..."
+        info "Installing ${label}..."
         $install_fn
         if has_cmd "$cmd"; then
-            ok "${label} 설치 완료"
+            ok "${label} installed"
         else
-            error "${label} 설치 실패"
+            error "${label} install failed"
             return 1
         fi
     fi
 }
 
-# 커맨드가 있지만 버전이 낮을 때 업그레이드
+# Upgrade when cmd exists but version is below min_version.
 ensure_version() {
     local cmd="$1"
     local min_version="$2"
@@ -93,9 +148,9 @@ ensure_version() {
     local label="${5:-$cmd}"
 
     if ! has_cmd "$cmd"; then
-        info "${label} 설치 중..."
+        info "Installing ${label}..."
         $install_fn
-        ok "${label} 설치 완료"
+        ok "${label} installed"
         return
     fi
 
@@ -104,8 +159,8 @@ ensure_version() {
     if version_gte "$min_version" "$current"; then
         skip "${label} ${current} ≥ ${min_version}"
     else
-        warn "${label} ${current} < ${min_version} — 업그레이드 중..."
+        warn "${label} ${current} < ${min_version} — upgrading..."
         $install_fn
-        ok "${label} 업그레이드 완료"
+        ok "${label} upgraded"
     fi
 }
