@@ -1,10 +1,10 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 # 2-line "Powerline-flat" prompt
-#   ┏━ <cwd> ❖ <git> ❖ <lang/version> ❖ <cmd_duration>
+#   ┏━ [user@host on SSH] <cwd> ❖ <git> ❖ <lang/version> ❖ <cmd_duration>
 #   ┗━❯ █
 format = """
-[┏━ ](bold blue)$directory$git_branch$git_status$nodejs$python$rust$golang$cmd_duration
+[┏━ ](bold blue)$username$hostname$directory$git_branch$git_status$nodejs$python$rust$golang$cmd_duration
 [┗━](bold blue)$character"""
 
 add_newline = true
@@ -13,6 +13,21 @@ add_newline = true
 success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
 vimcmd_symbol = "[❮](bold green)"
+
+# ─── SSH indicator: show "user@host" only over SSH ───
+# Together these two modules produce, e.g., "user@server.example " in red, which
+# makes it obvious you're not on your laptop. On local sessions they render nothing.
+[username]
+format = "[$user]($style)"
+style_user = "red bold"
+style_root = "red bold"
+show_always = false   # only when SSH'd or running as root
+
+[hostname]
+format = "[@$hostname ]($style)"
+ssh_only = true       # only when SSH'd
+style = "red bold"
+trim_at = "."         # short hostname
 
 # ─── cwd ───
 [directory]
@@ -25,7 +40,8 @@ read_only = " "
 read_only_style = "red"
 
 # ─── git branch + status ───
-# 분리자 ❖ 는 세그먼트의 leading 부분에 둠 → 비활성 시 자동으로 사라짐
+# The ❖ separator sits at the LEADING edge of the segment — so when the
+# segment is empty/disabled, the separator disappears with it.
 [git_branch]
 format = " [❖](dim blue) [$symbol$branch]($style)"
 symbol = " "
@@ -44,7 +60,7 @@ stashed = "≡${count}"
 deleted = "x${count}"
 conflicted = "${count}"
 
-# ─── language toolchains (디렉토리에 해당 파일 있을 때만 표시) ───
+# ─── Language toolchains (shown only when matching project files exist) ───
 [nodejs]
 format = " [❖](dim blue) [$symbol($version)]($style)"
 symbol = " "
@@ -69,7 +85,7 @@ format = " [❖](dim blue) [$symbol($version)]($style)"
 symbol = " "
 style = "cyan"
 
-# ─── 실행 시간 (2초 이상 걸린 명령어만) ───
+# ─── Command duration (only for commands ≥ 2 s) ───
 [cmd_duration]
 format = " [❖](dim blue) [$duration]($style)"
 style = "dim white"
