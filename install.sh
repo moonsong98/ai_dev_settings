@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+
+# Refuse to run if sourced — install.sh uses set -e and bash-only constructs.
+# Sourcing from zsh/bash would kill the parent shell on any error (closing
+# remote SSH sessions, etc.) and trigger spurious failures like
+# "BASH_SOURCE: parameter not set" or zsh treating `path` as the tied PATH array.
+if [ "${BASH_SOURCE[0]:-$0}" != "$0" ] || [ -n "${ZSH_VERSION:-}" ]; then
+    echo "install.sh must be executed, not sourced:" >&2
+    echo "    ./install.sh [--packages-only|--user-only]" >&2
+    return 1 2>/dev/null || exit 1
+fi
+
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -97,16 +108,19 @@ detect_os() {
 # We now manage zsh via appended managed blocks instead.
 # ─────────────────────────────────────────────
 unlink_legacy_zsh_stow() {
+    # NOTE: don't name the loop var "path" — that's a special tied array in zsh
+    # (= $PATH) and would error with "inconsistent type for assignment" if this
+    # script is accidentally sourced from a zsh shell.
     for f in .zshrc .zprofile .profile; do
-        local path="${HOME}/${f}"
-        if [ -L "$path" ]; then
+        local rc_path="${HOME}/${f}"
+        if [ -L "$rc_path" ]; then
             local target
-            target=$(readlink "$path")
+            target=$(readlink "$rc_path")
             # Only unlink symlinks that point into this repo.
             case "$target" in
                 "${DOTFILES_DIR}"/*|*/ai_dev_settings/*)
-                    info "Unlinking legacy stow symlink: ${path} → ${target}"
-                    rm "$path"
+                    info "Unlinking legacy stow symlink: ${rc_path} → ${target}"
+                    rm "$rc_path"
                     ;;
             esac
         fi
