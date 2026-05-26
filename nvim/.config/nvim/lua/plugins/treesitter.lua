@@ -24,21 +24,29 @@ return {
             -- misc
             "dockerfile", "sql",
         }
-        -- Only call install() for the parsers we don't already have — avoids
+        -- Only call install() for parsers we don't already have — avoids
         -- the per-startup overhead of re-downloading bundled items like
         -- vim/gitcommit that get reported as "not installed".
-        local installed = {}
-        for _, lang in ipairs(ts.get_installed("parsers") or {}) do
-            installed[lang] = true
-        end
-        local missing = {}
-        for _, lang in ipairs(want) do
-            if not installed[lang] then
-                table.insert(missing, lang)
+        --
+        -- `get_installed` is a relatively recent addition to the main branch;
+        -- on older revisions it's nil. Fall back to calling install() with
+        -- the full list — install() itself is idempotent and is fine, just
+        -- a touch slower on startup.
+        local missing = want
+        if type(ts.get_installed) == "function" then
+            local installed = {}
+            for _, lang in ipairs(ts.get_installed("parsers") or {}) do
+                installed[lang] = true
+            end
+            missing = {}
+            for _, lang in ipairs(want) do
+                if not installed[lang] then
+                    table.insert(missing, lang)
+                end
             end
         end
         if #missing > 0 then
-            ts.install(missing)
+            pcall(ts.install, missing)
         end
 
         -- If the buffer's filetype has a matching parser, enable treesitter
