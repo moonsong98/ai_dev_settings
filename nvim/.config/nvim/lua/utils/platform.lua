@@ -1,5 +1,5 @@
 -- utils/platform.lua
--- 플랫폼 감지 유틸리티
+-- Platform detection helpers.
 
 local M = {}
 

@@ -1,25 +1,26 @@
 -- plugins/editor.lua
--- 최소한의 에디터 플러그인
--- 추가 플러그인은 별도 파일로 하나씩 추가
+-- Minimal editor plugins.
+-- Additional plugins go into their own files, one per file.
 
 return {
-    -- ─── 컬러스킴 ───
+    -- ─── Colorscheme ───
     {
         "folke/tokyonight.nvim",
         lazy = false,
         priority = 1000,
         opts = {
             style = "night",
-            -- iTerm transparency 가 nvim 까지 비치도록 Normal 등의 bg 를 비움
+            -- Clear backgrounds so iTerm transparency shows through nvim.
             transparent = true,
             styles = {
-                sidebars = "transparent",   -- oil 등 사이드바
-                floats   = "transparent",   -- gitsigns preview, which-key 등 floating
+                sidebars = "transparent",   -- sidebars like oil
+                floats   = "transparent",   -- floating windows: gitsigns preview, which-key, …
             },
-            -- 컬러스킴 적용 직후 일부 그룹 색 override (tokyonight 팔레트 안의 색 사용)
+            -- Override specific highlight groups after the colorscheme is applied
+            -- (using colors from the tokyonight palette).
             on_highlights = function(hl, c)
-                -- gitsigns: tokyonight 기본은 add=청록 / change=파랑 으로 대비 약함.
-                -- git 컨벤션 (녹/노/빨) 로 통일해서 한 눈에 구분되게.
+                -- gitsigns: default tokyonight uses add=cyan / change=blue — low contrast.
+                -- Unify on the git convention (green / yellow / red) for at-a-glance reading.
                 hl.GitSignsAdd          = { fg = c.green }
                 hl.GitSignsChange       = { fg = c.yellow }
                 hl.GitSignsDelete       = { fg = c.red }
@@ -34,7 +35,7 @@ return {
         end,
     },
 
-    -- ─── which-key (키맵 도움말) ───
+    -- ─── which-key (keymap helper popup) ───
     {
         "folke/which-key.nvim",
         event = "VeryLazy",

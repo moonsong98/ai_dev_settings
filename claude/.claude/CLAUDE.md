@@ -1,31 +1,31 @@
 # CLAUDE.md
 
-이 파일은 Claude Code가 프로젝트 작업 시 참고하는 인스트럭션입니다.
-프로젝트 루트에 복사하여 프로젝트별로 커스터마이즈하세요.
+Instructions Claude Code reads when working in this project.
+Copy this file to the project root and customize it per project.
 
-## 프로젝트 개요
+## Project overview
 
-<!-- 프로젝트 설명을 여기에 작성 -->
+<!-- Write the project description here -->
 
-## 코딩 컨벤션
+## Coding conventions
 
-- 들여쓰기: 4 spaces
-- 파일 인코딩: UTF-8
-- 줄 끝: LF (Unix)
-- 커밋 메시지: Conventional Commits (feat:, fix:, docs:, refactor:, test:)
+- Indentation: 4 spaces
+- File encoding: UTF-8
+- Line endings: LF (Unix)
+- Commit messages: Conventional Commits (feat:, fix:, docs:, refactor:, test:)
 
-## 자주 사용하는 명령어
+## Frequent commands
 
-<!-- 프로젝트별 명령어 추가 -->
+<!-- Add project-specific commands -->
 ```bash
-# 예시
-# npm run dev       # 개발 서버
-# npm test          # 테스트
-# npm run build     # 빌드
+# Examples
+# npm run dev       # dev server
+# npm test          # tests
+# npm run build     # build
 ```
 
-## 작업 시 주의사항
+## Things to watch out for
 
-- 파일 수정 전 반드시 git status 확인
-- 테스트가 있는 코드는 수정 후 테스트 실행
-- 큰 변경은 작은 커밋으로 분리
+- Always run `git status` before modifying files
+- For code that has tests, run the tests after changes
+- Split large changes into small commits

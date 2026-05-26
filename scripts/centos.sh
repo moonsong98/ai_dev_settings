@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# CentOS 8 / Stream / RHEL 패키지 설치 (dnf)
+# CentOS 8 / Stream / RHEL package installation (dnf)
 
 install_neovim_centos() {
-    # CentOS 8 기본 repo에는 neovim이 없거나 버전이 낮음
-    # EPEL + 소스빌드 또는 appimage 사용
+    # The default CentOS 8 repos either lack neovim or ship an old version.
+    # Fall back to EPEL, source build, or the upstream appimage.
     if has_cmd dnf; then
         sudo dnf install -y epel-release 2>/dev/null || true
         sudo dnf install -y neovim 2>/dev/null
     fi
 
-    # EPEL 버전이 너무 낮으면 appimage로 대체
+    # If EPEL is too old, fall back to the appimage.
     if ! has_cmd nvim || ! version_gte "0.10.0" "$(nvim_version)"; then
-        warn "EPEL neovim 버전 부족 — appimage로 설치합니다."
+        warn "EPEL neovim too old — installing appimage."
         curl -fLo /tmp/nvim.appimage \
             https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
         chmod u+x /tmp/nvim.appimage
@@ -39,10 +39,10 @@ install_ripgrep_centos() {
 }
 
 install_fd_centos() {
-    # fd-find 패키지가 EPEL에 있을 수 있음
+    # fd-find may be available via EPEL.
     sudo dnf install -y fd-find 2>/dev/null || {
-        # 없으면 GitHub 릴리스에서 설치
-        warn "dnf에 fd-find 없음 — GitHub에서 설치합니다."
+        # Otherwise pull the GitHub release binary.
+        warn "fd-find not in dnf — installing from GitHub."
         local fd_version="10.2.0"
         curl -fLo /tmp/fd.tar.gz \
             "https://github.com/sharkdp/fd/releases/download/v${fd_version}/fd-v${fd_version}-x86_64-unknown-linux-musl.tar.gz"
@@ -54,7 +54,7 @@ install_fd_centos() {
 
 install_fzf_centos() {
     if [ -d "${HOME}/.fzf" ]; then
-        skip "fzf 이미 설치됨"
+        skip "fzf already installed"
         return
     fi
     git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf"
@@ -63,7 +63,7 @@ install_fzf_centos() {
 }
 
 install_starship_centos() {
-    # 공식 install script (정적 바이너리를 /usr/local/bin 에 설치)
+    # Official install script (places a static binary in /usr/local/bin).
     curl -sS https://starship.rs/install.sh | sh -s -- -y
 }
 
@@ -76,7 +76,7 @@ install_jq_centos() {
 }
 
 install_tree_sitter_centos() {
-    # dnf 에 tree-sitter CLI 없음 → GitHub 릴리스 바이너리
+    # tree-sitter CLI isn't in dnf → grab the GitHub release binary.
     local ver="0.26.9"
     local url="https://github.com/tree-sitter/tree-sitter/releases/download/v${ver}/tree-sitter-linux-x64.gz"
     curl -fL "$url" -o /tmp/tree-sitter.gz
@@ -91,15 +91,15 @@ install_build_deps_centos() {
 }
 
 install_packages() {
-    info "=== CentOS/RHEL 패키지 설치 ==="
+    info "=== CentOS/RHEL package installation ==="
 
-    # EPEL 활성화
+    # Enable EPEL.
     sudo dnf install -y epel-release 2>/dev/null || true
 
-    # 빌드 의존성
+    # Build dependencies
     install_build_deps_centos
 
-    # 핵심 도구
+    # Core tools
     ensure_cmd "nvim"  install_neovim_centos  "Neovim"
     ensure_cmd "tmux"  install_tmux_centos    "tmux"
     ensure_cmd "node"  install_node_centos    "Node.js"
@@ -108,13 +108,13 @@ install_packages() {
     ensure_cmd "jq"    install_jq_centos      "jq"
     ensure_cmd "tree-sitter" install_tree_sitter_centos "tree-sitter CLI"
 
-    # 검색 도구
+    # Search tools
     ensure_cmd "rg"    install_ripgrep_centos "ripgrep"
     ensure_cmd "fd"    install_fd_centos      "fd"
     ensure_cmd "fzf"   install_fzf_centos     "fzf"
 
-    # 프롬프트
+    # Prompt
     ensure_cmd "starship" install_starship_centos "starship"
 
-    ok "CentOS 패키지 설치 완료"
+    ok "CentOS packages installed"
 }

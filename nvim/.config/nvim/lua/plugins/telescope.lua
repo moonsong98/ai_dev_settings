@@ -1,6 +1,6 @@
 -- plugins/telescope.lua
--- fzf 스타일 퍼지 파인더 + 다양한 picker (파일/내용/버퍼/git/...).
--- fzf-native 확장은 C 로 빌드돼 큰 결과 셋에서 체감 차이.
+-- fzf-style fuzzy finder + assorted pickers (files / content / buffers / git / …).
+-- fzf-native is built in C and is noticeably faster on large result sets.
 
 return {
     "nvim-telescope/telescope.nvim",
@@ -13,26 +13,26 @@ return {
         },
     },
     keys = {
-        -- 파일 / 내용
-        { "<leader>ff", "<cmd>Telescope find_files<cr>",   desc = "파일 찾기" },
-        { "<leader>fg", "<cmd>Telescope live_grep<cr>",    desc = "내용 검색 (live grep)" },
-        { "<leader>fs", "<cmd>Telescope grep_string<cr>",  desc = "커서 단어 grep" },
-        { "<leader>fr", "<cmd>Telescope oldfiles<cr>",     desc = "최근 연 파일" },
-        -- 버퍼 / 도움말
-        { "<leader>fb", "<cmd>Telescope buffers<cr>",      desc = "열린 버퍼 전환" },
-        { "<leader>fh", "<cmd>Telescope help_tags<cr>",    desc = "vim help 검색" },
-        { "<leader>fk", "<cmd>Telescope keymaps<cr>",      desc = "키맵 검색" },
-        { "<leader>fc", "<cmd>Telescope commands<cr>",     desc = "명령어 검색" },
+        -- Files / content
+        { "<leader>ff", "<cmd>Telescope find_files<cr>",   desc = "Find file" },
+        { "<leader>fg", "<cmd>Telescope live_grep<cr>",    desc = "Live grep (content)" },
+        { "<leader>fs", "<cmd>Telescope grep_string<cr>",  desc = "Grep word under cursor" },
+        { "<leader>fr", "<cmd>Telescope oldfiles<cr>",     desc = "Recently opened files" },
+        -- Buffers / help
+        { "<leader>fb", "<cmd>Telescope buffers<cr>",      desc = "Switch buffer" },
+        { "<leader>fh", "<cmd>Telescope help_tags<cr>",    desc = "Search vim help" },
+        { "<leader>fk", "<cmd>Telescope keymaps<cr>",      desc = "Search keymaps" },
+        { "<leader>fc", "<cmd>Telescope commands<cr>",     desc = "Search commands" },
         -- git
-        { "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "git 브랜치" },
-        { "<leader>gs", "<cmd>Telescope git_status<cr>",   desc = "git 변경 파일" },
-        { "<leader>gc", "<cmd>Telescope git_commits<cr>",  desc = "git 커밋 로그" },
-        -- 재실행: 직전 picker 다시 열기
-        { "<leader>f.", "<cmd>Telescope resume<cr>",       desc = "직전 picker 재실행" },
+        { "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "git branches" },
+        { "<leader>gs", "<cmd>Telescope git_status<cr>",   desc = "git modified files" },
+        { "<leader>gc", "<cmd>Telescope git_commits<cr>",  desc = "git commit log" },
+        -- Resume: re-open the last picker
+        { "<leader>f.", "<cmd>Telescope resume<cr>",       desc = "Resume last picker" },
     },
     opts = {
         defaults = {
-            -- live_grep 가 쓰는 ripgrep 인자: hidden 포함, .git/ 만 제외
+            -- ripgrep args used by live_grep: include hidden, only exclude .git/
             vimgrep_arguments = {
                 "rg",
                 "--color=never",
@@ -49,7 +49,7 @@ return {
         pickers = {
             find_files = {
                 hidden = true,
-                -- fd 가 ripgrep 보다 파일 열거에 더 빠름
+                -- fd is faster than ripgrep for plain file enumeration.
                 find_command = { "fd", "--type=f", "--hidden", "--exclude=.git" },
             },
             buffers = {

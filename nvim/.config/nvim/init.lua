@@ -1,16 +1,16 @@
 -- ╔══════════════════════════════════════════╗
 -- ║  Neovim Configuration                    ║
--- ║  lazy.nvim 기반 · 크로스 플랫폼          ║
+-- ║  lazy.nvim-based · cross-platform        ║
 -- ╚══════════════════════════════════════════╝
 
--- 기본 옵션 (플러그인 로드 전)
+-- Basic options (must run before plugin load)
 require("config.options")
 
--- 기본 키맵 (플러그인 무관)
+-- Plugin-independent keymaps
 require("config.keymaps")
 
--- Autocmd
+-- Autocmds
 require("config.autocmds")
 
--- lazy.nvim 부트스트랩 & 플러그인 로드
+-- lazy.nvim bootstrap & plugin load
 require("config.lazy")

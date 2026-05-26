@@ -1,5 +1,6 @@
 -- plugins/lualine.lua
--- 풍성한 statusline. globalstatus=true 로 윈도우 별이 아닌 화면 맨 아래 한 줄.
+-- Rich statusline. globalstatus=true → single line at the bottom of the screen
+-- instead of one per window.
 
 return {
     "nvim-lualine/lualine.nvim",
@@ -9,14 +10,14 @@ return {
         options = {
             theme = "tokyonight",
             globalstatus = true,
-            section_separators = "",   -- powerline 화살표 안 씀 (간결)
+            section_separators = "",   -- no powerline arrows (cleaner)
             component_separators = "│",
         },
         sections = {
             lualine_a = { "mode" },
             lualine_b = { "branch", "diff", "diagnostics" },
             lualine_c = {
-                { "filename", path = 1 },   -- cwd 기준 상대경로
+                { "filename", path = 1 },   -- relative path from cwd
             },
             lualine_x = { "encoding", "filetype" },
             lualine_y = { "progress" },

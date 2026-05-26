@@ -1,35 +1,35 @@
 -- plugins/oil.lua
--- 디렉토리를 버퍼로 열어 vim 모션으로 편집하는 파일 탐색기.
---   `:w`  변경 저장 (rename, delete, create)
---   `-`   상위 디렉토리로 (oil 안에서)
---   `<CR>` 파일 열기 / 디렉토리 진입
---   `q`   닫기
+-- File explorer that opens a directory as a buffer you edit with vim motions.
+--   `:w`   save changes (rename, delete, create)
+--   `-`    go up one directory (when already in oil)
+--   `<CR>` open file / descend into directory
+--   `q`    close
 
 return {
     "stevearc/oil.nvim",
-    -- 디렉토리로 nvim 을 띄울 때 oil 이 즉시 받게 lazy 해제
+    -- Disable lazy loading so oil takes over when nvim is launched on a directory.
     lazy = false,
     opts = {
         default_file_explorer = true,
         view_options = {
             show_hidden = true,
         },
-        -- oil-git-status 가 두 글자 status code (index + worktree) 를 그릴 자리 확보
+        -- Reserve room for the two-char status code (index + worktree) drawn by oil-git-status.
         win_options = {
             signcolumn = "yes:2",
         },
         keymaps = {
-            -- 우리 `<C-h/j/k/l>` 윈도우 이동과 안 겹치게 oil 내 충돌 키 비활성
+            -- Disable oil's <C-h/j/k/l> so they don't collide with our window-nav maps.
             ["<C-h>"] = false,
             ["<C-j>"] = false,
             ["<C-k>"] = false,
             ["<C-l>"] = false,
-            -- vim 관습대로 q 로 닫기 (기본은 <C-c>)
+            -- Use the vim convention of `q` to close (default is <C-c>).
             ["q"] = "actions.close",
         },
     },
     keys = {
-        { "-",         "<cmd>Oil<cr>", desc = "파일 탐색기 (oil)" },
-        { "<leader>e", "<cmd>Oil<cr>", desc = "파일 탐색기 (oil)" },
+        { "-",         "<cmd>Oil<cr>", desc = "File explorer (oil)" },
+        { "<leader>e", "<cmd>Oil<cr>", desc = "File explorer (oil)" },
     },
 }

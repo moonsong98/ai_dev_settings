@@ -1,5 +1,5 @@
 -- config/lazy.lua
--- lazy.nvim 부트스트랩 & 플러그인 로드
+-- lazy.nvim bootstrap & plugin loading
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -33,7 +33,7 @@ require("lazy").setup({
         colorscheme = { "default" },
     },
     checker = {
-        enabled = false, -- 수동 업데이트 (:Lazy update)
+        enabled = false, -- manual update via :Lazy update
     },
     change_detection = {
         notify = false,

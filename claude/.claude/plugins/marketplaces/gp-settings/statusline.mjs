@@ -203,7 +203,7 @@ const HUD_DEFAULTS = {
   lines_changed: true,     // "+42/-7"
 
   // Line 4 — notices
-  update_notice: true,     // "⬆ HUD 업데이트가 있습니다"
+  update_notice: true,     // "⬆ HUD update available"
 };
 
 function loadHudShow(cwd) {
@@ -418,7 +418,7 @@ function readUpdateCache() {
     const raw = readFileSync(UPDATE_CACHE_FILE, "utf-8");
     const cache = JSON.parse(raw);
     if (Date.now() - cache.timestamp < UPDATE_CHECK_TTL_MS) {
-      // HEAD가 바뀌었으면 (pull 했으면) 캐시 무효화
+      // Invalidate the cache if HEAD changed (i.e. a git pull happened).
       if (cache.head && cache.head !== getPluginHead()) return null;
       return cache;
     }
@@ -768,8 +768,8 @@ function render(data, gitBranch, usage, effort, subscriptionType, updateStatus, 
 
   if (show.update_notice && updateStatus?.available) {
     const label = updateStatus.versionMismatch
-      ? "⬆ 플러그인 업데이트가 있습니다"
-      : "⬆ HUD 업데이트가 있습니다";
+      ? "⬆ plugin update available"
+      : "⬆ HUD update available";
     lines.push(
       `${YELLOW}${label}${RESET} ${DIM}· /gp:update-hud${RESET}`
     );

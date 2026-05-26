@@ -3,20 +3,21 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
--- ─── 외부 변경 자동 감지 (Claude Code 등) ───
+-- ─── Auto-detect external changes (e.g. from Claude Code) ───
 local external_change = augroup("ExternalChange", { clear = true })
 
 autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
     group = external_change,
     pattern = "*",
     callback = function()
-        -- cmdline 모드 또는 command-line window (q:, q/) 안에서는 :checktime 이 E11 발생 → skip
+        -- Inside cmdline mode or a command-line window (q:, q/), :checktime
+        -- raises E11, so skip there.
         if vim.fn.mode() == "c" or vim.fn.getcmdwintype() ~= "" then
             return
         end
         vim.cmd("checktime")
     end,
-    desc = "외부 파일 변경 자동 리로드",
+    desc = "Auto-reload externally changed files",
 })
 
 autocmd("FileChangedShellPost", {
@@ -25,10 +26,10 @@ autocmd("FileChangedShellPost", {
     callback = function()
         vim.notify("File changed on disk. Reloaded.", vim.log.levels.WARN)
     end,
-    desc = "리로드 알림",
+    desc = "Notify when reloaded",
 })
 
--- ─── 마지막 편집 위치 복원 ───
+-- ─── Restore the last edit position ───
 autocmd("BufReadPost", {
     group = augroup("RestoreCursor", { clear = true }),
     callback = function()
@@ -38,18 +39,18 @@ autocmd("BufReadPost", {
             pcall(vim.api.nvim_win_set_cursor, 0, mark)
         end
     end,
-    desc = "마지막 편집 위치 복원",
+    desc = "Restore last edit position",
 })
 
--- ─── 저장 시 후행 공백 제거 ───
+-- ─── Trim trailing whitespace on save ───
 autocmd("BufWritePre", {
     group = augroup("TrimWhitespace", { clear = true }),
     pattern = "*",
     command = [[%s/\s\+$//e]],
-    desc = "저장 시 후행 공백 제거",
+    desc = "Trim trailing whitespace on save",
 })
 
--- ─── 터미널 설정 ───
+-- ─── Terminal setup ───
 autocmd("TermOpen", {
     group = augroup("TerminalSetup", { clear = true }),
     callback = function()
@@ -58,14 +59,14 @@ autocmd("TermOpen", {
         vim.opt_local.signcolumn = "no"
         vim.cmd("startinsert")
     end,
-    desc = "터미널 열 때 라인넘버 숨김 + insert 모드",
+    desc = "Hide line numbers + enter insert mode on TermOpen",
 })
 
--- ─── yank 하이라이트 ───
+-- ─── Highlight on yank ───
 autocmd("TextYankPost", {
     group = augroup("YankHighlight", { clear = true }),
     callback = function()
         vim.highlight.on_yank({ timeout = 200 })
     end,
-    desc = "복사 시 하이라이트",
+    desc = "Highlight yanked region",
 })

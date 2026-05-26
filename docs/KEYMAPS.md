@@ -1,122 +1,122 @@
-# Keymaps 치트시트
+# Keymap cheatsheet
 
 ## Neovim
 
 Leader: `Space`
 
-### 기본
+### Basic
 
-| 키 | 모드 | 동작 |
+| Key | Mode | Action |
 |---|---|---|
 | `jk` | Insert | Esc |
-| `<leader>w` | Normal | 저장 |
-| `<leader>q` | Normal | 닫기 |
-| `<Esc>` | Normal | 검색 하이라이트 해제 |
+| `<leader>w` | Normal | Save |
+| `<leader>q` | Normal | Quit |
+| `<Esc>` | Normal | Clear search highlight |
 
-### 창 이동
+### Window navigation
 
-| 키 | 동작 |
+| Key | Action |
 |---|---|
-| `C-h/j/k/l` | 창 이동 (좌/하/상/우) |
-| `C-Up/Down/Left/Right` | 창 크기 조절 |
+| `C-h/j/k/l` | Move window (left/down/up/right) |
+| `C-Up/Down/Left/Right` | Resize window |
 
-### 버퍼
+### Buffers
 
-| 키 | 동작 |
+| Key | Action |
 |---|---|
-| `S-h` | 이전 버퍼 |
-| `S-l` | 다음 버퍼 |
+| `S-h` | Previous buffer |
+| `S-l` | Next buffer |
 
-### 파일 탐색기 (oil.nvim)
+### File explorer (oil.nvim)
 
-| 키 | 모드 | 동작 |
+| Key | Mode | Action |
 |---|---|---|
-| `-` | Normal | 현재 버퍼 디렉토리 열기 (oil 안에서는 상위로 이동) |
-| `<leader>e` | Normal | 같은 동작 (e = explorer) |
+| `-` | Normal | Open the current buffer's directory in oil (inside oil = parent dir) |
+| `<leader>e` | Normal | Same (e = explorer) |
 
-oil 버퍼 안에서:
-- `<CR>` 파일 열기 / 디렉토리 진입
-- 한 줄 추가하면 새 파일/디렉토리, `dd` 로 삭제, `cw` 로 이름 변경
-- `:w` 저장 → 디스크에 변경 적용
-- `q` 닫기
+Inside an oil buffer:
+- `<CR>` open file / descend into directory
+- Add a line to create a new file/directory, `dd` to delete, `cw` to rename
+- `:w` write changes to disk
+- `q` close
 
 ### Git (gitsigns.nvim)
 
-| 키 | 모드 | 동작 |
+| Key | Mode | Action |
 |---|---|---|
-| `]h` / `[h` | Normal | 다음 / 이전 변경 hunk |
-| `<leader>hp` | Normal | 변경 미리보기 (floating) |
-| `<leader>hd` | Normal | diff 보기 (현재 vs HEAD) |
-| `<leader>hb` | Normal | 라인 blame (전체 정보 floating) |
-| `<leader>tb` | Normal | 라인 blame 인라인 토글 |
-| `<leader>hs` | Normal | hunk stage (= git add) |
-| `<leader>hr` | Normal | hunk reset (변경 되돌리기) |
-| `<leader>hS` / `<leader>hR` | Normal | 버퍼 전체 stage / reset |
-| `<leader>td` | Normal | 삭제된 라인 인라인 표시 토글 |
-| `ih` | Operator/Visual | hunk 텍스트 오브젝트 (`vih`, `dih`, `yih` 등) |
+| `]h` / `[h` | Normal | Next / previous hunk |
+| `<leader>hp` | Normal | Preview hunk (floating) |
+| `<leader>hd` | Normal | Diff current buffer vs HEAD |
+| `<leader>hb` | Normal | Blame the line (full info, floating) |
+| `<leader>tb` | Normal | Toggle inline blame |
+| `<leader>hs` | Normal | Stage hunk (= git add) |
+| `<leader>hr` | Normal | Reset hunk (revert change) |
+| `<leader>hS` / `<leader>hR` | Normal | Stage / reset entire buffer |
+| `<leader>td` | Normal | Toggle inline deleted-line view |
+| `ih` | Operator/Visual | Hunk text object (`vih`, `dih`, `yih`, …) |
 
-### Telescope (퍼지 파인더)
+### Telescope (fuzzy finder)
 
-| 키 | 동작 |
+| Key | Action |
 |---|---|
-| `<leader>ff` | 파일 찾기 (fd) |
-| `<leader>fg` | 내용 검색 — live grep (rg) |
-| `<leader>fs` | 커서 위 단어 grep |
-| `<leader>fr` | 최근 연 파일 (oldfiles) |
-| `<leader>fb` | 열린 버퍼 전환 |
-| `<leader>fh` | vim help 검색 |
-| `<leader>fk` | 키맵 검색 |
-| `<leader>fc` | 명령어 검색 |
-| `<leader>gb` | git 브랜치 |
-| `<leader>gs` | git 변경 파일 |
-| `<leader>gc` | git 커밋 로그 |
-| `<leader>f.` | 직전 picker 재실행 |
+| `<leader>ff` | Find file (fd) |
+| `<leader>fg` | Live grep (rg) |
+| `<leader>fs` | Grep word under cursor |
+| `<leader>fr` | Recently opened files (oldfiles) |
+| `<leader>fb` | Switch buffer |
+| `<leader>fh` | Search vim help |
+| `<leader>fk` | Search keymaps |
+| `<leader>fc` | Search commands |
+| `<leader>gb` | git branches |
+| `<leader>gs` | git modified files |
+| `<leader>gc` | git commit log |
+| `<leader>f.` | Resume last picker |
 
-telescope picker 안에서:
-- `<C-n>` / `<C-p>` 또는 `<C-j>` / `<C-k>` 결과 이동
-- `<CR>` 선택
-- `<C-x>` 가로 분할로 열기, `<C-v>` 세로 분할, `<C-t>` 새 탭
-- `<C-/>` insert 모드에서 도움말, `?` normal 모드에서
+Inside a telescope picker:
+- `<C-n>` / `<C-p>` or `<C-j>` / `<C-k>` — move selection
+- `<CR>` — accept
+- `<C-x>` open in horizontal split, `<C-v>` vertical split, `<C-t>` new tab
+- `<C-/>` help in insert mode, `?` in normal mode
 
-### 주석 (Comment.nvim)
+### Comments (Comment.nvim)
 
-| 키 | 모드 | 동작 |
+| Key | Mode | Action |
 |---|---|---|
-| `Ctrl+/` | Normal | 현재 라인 주석 토글 (VSCode 스타일) |
-| `Ctrl+/` | Visual | 선택 영역 주석 토글 |
-| `gcc` | Normal | 현재 라인 주석 토글 (vim 표준) |
-| `gbc` | Normal | 블록 주석 토글 |
-| `gc{motion}` | Normal | 모션 범위 주석 (`gcap` 단락, `gc5j` 아래 5줄, `gcG` 끝까지) |
-| `gc` | Visual | 선택 영역 주석 |
-| `gco` / `gcO` | Normal | 아래/위에 주석 라인 추가하고 insert |
-| `gcA` | Normal | 라인 끝에 주석 추가하고 insert |
+| `Ctrl+/` | Normal | Toggle current line comment (VSCode-style) |
+| `Ctrl+/` | Visual | Toggle comment on selection |
+| `gcc` | Normal | Toggle current line comment (vim standard) |
+| `gbc` | Normal | Toggle block comment |
+| `gc{motion}` | Normal | Comment over motion (`gcap` paragraph, `gc5j` next 5 lines, `gcG` to EOF) |
+| `gc` | Visual | Comment selection |
+| `gco` / `gcO` | Normal | Add comment line below / above and enter insert |
+| `gcA` | Normal | Add comment at end of line and enter insert |
 
 ### Surround (nvim-surround)
 
-| 키 | 모드 | 동작 |
+| Key | Mode | Action |
 |---|---|---|
 | `cs"'` | Normal | `"x"` → `'x'` (change surround) |
 | `cs)]` | Normal | `(x)` → `[x]` |
 | `ds"` | Normal | `"x"` → `x` (delete surround) |
-| `ysiw"` | Normal | `word` → `"word"` (yank surround inner word) |
-| `yss)` | Normal | 라인 전체를 `(...)` 로 |
-| `S"` | Visual | 선택 영역을 `"..."` 로 |
+| `ysiw"` | Normal | `word` → `"word"` (yank-surround inner word) |
+| `yss)` | Normal | Wrap the entire line in `(...)` |
+| `S"` | Visual | Wrap the selection in `"..."` |
 
-prefix 요약: `cs` change · `ds` delete · `ys` add (yank) · `S` (visual) add
+Prefix summary: `cs` change · `ds` delete · `ys` add (yank) · `S` (visual) add
 
-### Claude Code 연동
+### Claude Code integration
 
-| 키 | 모드 | 동작 |
+| Key | Mode | Action |
 |---|---|---|
-| `<leader>yr` | Visual | 상대경로 + 코드 복사 |
+| `<leader>yr` | Visual | Copy selection + relative path (paste into Claude) |
 
-### Visual 모드
+### Visual mode
 
-| 키 | 동작 |
+| Key | Action |
 |---|---|
-| `J` / `K` | 라인 이동 (아래/위) |
-| `<` / `>` | 들여쓰기 (선택 유지) |
-| `<leader>p` | 붙여넣기 (레지스터 보존) |
+| `J` / `K` | Move lines down / up |
+| `<` / `>` | Indent (preserves selection) |
+| `<leader>p` | Paste without overwriting the unnamed register |
 
 ---
 
@@ -124,33 +124,34 @@ prefix 요약: `cs` change · `ds` delete · `ys` add (yank) · `S` (visual) add
 
 Prefix: `C-a`
 
-### 기본
+### Basic
 
-| 키 | 동작 |
+| Key | Action |
 |---|---|
-| `prefix + \|` | 수직 분할 |
-| `prefix + -` | 수평 분할 |
-| `prefix + c` | 새 윈도우 |
-| `prefix + r` | 설정 리로드 |
+| `prefix + \|` | Split vertically |
+| `prefix + -` | Split horizontally |
+| `prefix + c` | New window |
+| `prefix + r` | Reload config |
 
-### 패인 이동/크기
+### Pane navigation / resize
 
-| 키 | 동작 |
+| Key | Action |
 |---|---|
-| `prefix + h/j/k/l` | 패인 이동 |
-| `prefix + H/J/K/L` | 패인 크기 조절 |
+| `prefix + h/j/k/l` | Move between panes |
+| `prefix + H/J/K/L` | Resize panes |
 
 ### Claude Code
 
-| 키 | 동작 |
+| Key | Action |
 |---|---|
-| `prefix + C` | Claude Code 패인 열기 (우측 40%) |
+| `prefix + C` | Open a Claude Code pane (right 40%) |
+| `prefix + C-c` | Rebuild window: 3-pane layout (claude / nvim / shell) |
 
-### 세션
+### Sessions
 
-| 키 | 동작 |
+| Key | Action |
 |---|---|
-| `prefix + C-s` | 세션 저장 (resurrect) |
-| `prefix + C-r` | 세션 복원 (resurrect) |
-| `prefix + d` | 디태치 |
-| `prefix + [` | 복사 모드 (vi 키바인딩) |
+| `prefix + C-s` | Save session (resurrect) |
+| `prefix + C-r` | Restore session (resurrect) |
+| `prefix + d` | Detach |
+| `prefix + [` | Copy mode (vi keybindings) |

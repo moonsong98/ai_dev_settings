@@ -1,7 +1,7 @@
 -- plugins/treesitter.lua
--- nvim-treesitter `main` 브랜치 (master 는 archived + nvim 0.12 의 새 API 와 호환 X).
--- main 은 라이브러리 형태 — install() 로 parser 설치하고, highlight 은 직접
--- vim.treesitter.start() 를 FileType 시점에 호출.
+-- nvim-treesitter `main` branch (master is archived and incompatible with nvim 0.12's new API).
+-- The main branch is library-shaped: call install() to add parsers, and start
+-- highlighting yourself via vim.treesitter.start() on FileType.
 
 return {
     "nvim-treesitter/nvim-treesitter",
@@ -11,21 +11,22 @@ return {
     config = function()
         local ts = require("nvim-treesitter")
         local want = {
-            -- 코어
+            -- core
             "lua", "vim", "vimdoc", "query", "regex",
-            -- 자주 쓰는 언어
+            -- common languages
             "bash", "python", "javascript", "typescript", "tsx",
-            -- 데이터 / 설정
+            -- data / config
             "json", "yaml", "toml",
-            -- 마크업
+            -- markup
             "markdown", "markdown_inline", "html", "css",
             -- git
             "gitcommit", "gitignore", "diff",
-            -- 기타
+            -- misc
             "dockerfile", "sql",
         }
-        -- 이미 설치된 parser 는 빼고 install() 호출 — 매 startup 마다
-        -- vim/gitcommit 같은 미탐지 항목 재다운로드 시도하던 부담 제거
+        -- Only call install() for the parsers we don't already have — avoids
+        -- the per-startup overhead of re-downloading bundled items like
+        -- vim/gitcommit that get reported as "not installed".
         local installed = {}
         for _, lang in ipairs(ts.get_installed("parsers") or {}) do
             installed[lang] = true
@@ -40,8 +41,9 @@ return {
             ts.install(missing)
         end
 
-        -- 버퍼의 filetype 에 매칭되는 parser 가 있으면 treesitter 하이라이트 켬.
-        -- main 브랜치는 module 시스템이 없어서 사용자가 명시적으로 켜야 함.
+        -- If the buffer's filetype has a matching parser, enable treesitter
+        -- highlighting. The main branch has no module system, so we wire it up
+        -- explicitly here.
         vim.api.nvim_create_autocmd("FileType", {
             callback = function(args)
                 local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)

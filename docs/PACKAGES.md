@@ -1,65 +1,65 @@
 # Packages
 
-현재 사용 중인 패키지 목록과 역할.
-변경 시 반드시 CHANGELOG.md 도 함께 업데이트할 것.
+Inventory of installed packages and what each one does.
+**Always update `CHANGELOG.md` when this file changes.**
 
-## 시스템 패키지
+## System packages
 
-| 패키지 | 최소 버전 | 테스트 버전 | 역할 | 비고 |
+| Package | Min version | Tested version | Role | Notes |
 |---|---|---|---|---|
-| neovim | 0.10.0 | 0.11.x | 에디터 | appimage (CentOS) |
-| tmux | 3.2 | 3.5a | 터미널 멀티플렉서 | |
-| node | 18.x | 22.x LTS | Claude Code 런타임 | |
-| git | 2.x | 2.45 | 버전 관리 | |
-| stow | 2.x | 2.4.0 | 심링크 관리 | |
-| ripgrep | 13.x | 14.x | 검색 (grep 대체) | |
-| fd | 8.x | 10.x | 파일 찾기 (find 대체) | |
-| fzf | 0.40+ | 0.57 | 퍼지 파인더 | |
-| starship | 1.x | 1.25 | 크로스 셸 프롬프트 | Linux 는 install.sh (no apt/dnf) |
-| tree-sitter (CLI) | 0.20+ | 0.26 | nvim-treesitter `main` 브랜치가 parser 빌드에 사용 | brew `tree-sitter-cli`, Linux 는 GitHub 릴리스 |
+| neovim | 0.10.0 | 0.11.x | Editor | appimage on CentOS |
+| tmux | 3.2 | 3.5a | Terminal multiplexer | |
+| node | 18.x | 22.x LTS | Claude Code runtime | |
+| git | 2.x | 2.45 | Version control | |
+| stow | 2.x | 2.4.0 | Symlink management | |
+| ripgrep | 13.x | 14.x | Search (grep replacement) | |
+| fd | 8.x | 10.x | File finder (find replacement) | |
+| fzf | 0.40+ | 0.57 | Fuzzy finder | |
+| starship | 1.x | 1.25 | Cross-shell prompt | Linux uses install.sh (not apt/dnf) |
+| tree-sitter (CLI) | 0.20+ | 0.26 | Used by nvim-treesitter `main` branch to build parsers | brew `tree-sitter-cli`, GitHub release on Linux |
 
-## Neovim 플러그인 (lazy.nvim)
+## Neovim plugins (lazy.nvim)
 
-| 플러그인 | 역할 | lazy? | 비고 |
+| Plugin | Role | lazy? | Notes |
 |---|---|---|---|
-| folke/lazy.nvim | 플러그인 매니저 | - | 부트스트랩 |
-| folke/tokyonight.nvim | 컬러스킴 | No | priority=1000 |
-| folke/which-key.nvim | 키맵 도움말 | Yes | VeryLazy |
-| stevearc/oil.nvim | 파일 탐색기 (디렉토리를 버퍼로) | No | `-` / `<leader>e` |
-| refractalize/oil-git-status.nvim | oil 안에서 git status 컬럼 | Yes | User OilEnter |
-| lewis6991/gitsigns.nvim | 사인 컬럼에 git diff + hunk 조작 | Yes | BufReadPre 시 로드 |
-| nvim-telescope/telescope.nvim | 퍼지 파인더 (파일/grep/buffer/git/...) | Yes | `Telescope` cmd 시 로드 |
-| nvim-lua/plenary.nvim | telescope 의존성 (lua util) | - | telescope 와 같이 로드 |
-| nvim-telescope/telescope-fzf-native.nvim | C 로 컴파일된 fzf 매처 (성능) | Yes | `make` 빌드 필요 |
-| nvim-treesitter/nvim-treesitter | AST 기반 문법 하이라이트 + 인덴트 | Yes | `master` 브랜치, `:TSUpdate` 로 parser 빌드 |
-| numToStr/Comment.nvim | 주석 토글 (`gcc`, `gc`, `gbc` 등) | Yes | BufReadPost |
-| kylechui/nvim-surround | surrounding 조작 (`cs`, `ds`, `ys`) | Yes | BufReadPost |
-| nvim-lualine/lualine.nvim | 풍성한 statusline | Yes | VeryLazy |
-| nvim-tree/nvim-web-devicons | filetype 아이콘 (Nerd Font) | - | lualine 의 dep |
-| MeanderingProgrammer/render-markdown.nvim | markdown 인-버퍼 렌더링 | Yes | `ft = markdown` |
+| folke/lazy.nvim | Plugin manager | - | Bootstrap |
+| folke/tokyonight.nvim | Colorscheme | No | priority=1000 |
+| folke/which-key.nvim | Keymap helper popup | Yes | VeryLazy |
+| stevearc/oil.nvim | File explorer (directory as buffer) | No | `-` / `<leader>e` |
+| refractalize/oil-git-status.nvim | git status column inside oil | Yes | User OilEnter |
+| lewis6991/gitsigns.nvim | git diff in sign column + hunk actions | Yes | Loads on BufReadPre |
+| nvim-telescope/telescope.nvim | Fuzzy finder (files / grep / buffer / git / …) | Yes | Loads on `Telescope` cmd |
+| nvim-lua/plenary.nvim | telescope dep (lua util) | - | Loads with telescope |
+| nvim-telescope/telescope-fzf-native.nvim | fzf matcher compiled in C (perf) | Yes | Needs `make` build |
+| nvim-treesitter/nvim-treesitter | AST-based syntax highlight + indent | Yes | `main` branch, `:TSUpdate` builds parsers |
+| numToStr/Comment.nvim | Toggle comments (`gcc`, `gc`, `gbc`, …) | Yes | BufReadPost |
+| kylechui/nvim-surround | Edit surroundings (`cs`, `ds`, `ys`) | Yes | BufReadPost |
+| nvim-lualine/lualine.nvim | Rich statusline | Yes | VeryLazy |
+| nvim-tree/nvim-web-devicons | Filetype icons (Nerd Font) | - | lualine dep |
+| MeanderingProgrammer/render-markdown.nvim | In-buffer markdown rendering | Yes | `ft = markdown` |
 
-> 플러그인 정확한 버전은 `nvim/lazy-lock.json` 에서 관리됩니다.
+> Exact plugin versions are pinned in `nvim/.config/nvim/lazy-lock.json`.
 
-## tmux 플러그인 (TPM)
+## tmux plugins (TPM)
 
-| 플러그인 | 역할 | 비고 |
+| Plugin | Role | Notes |
 |---|---|---|
-| tmux-plugins/tpm | 플러그인 매니저 | |
-| tmux-plugins/tmux-sensible | 합리적 기본값 | |
-| tmux-plugins/tmux-resurrect | 세션 저장/복원 | prefix + C-s / C-r |
-| tmux-plugins/tmux-cpu | CPU/RAM 사용률 (status bar) | `#{cpu_percentage}`, `#{ram_percentage}` |
-| tmux-plugins/tmux-battery | 배터리 (status bar) | `#{battery_icon}`, `#{battery_percentage}` |
-| tmux-plugins/tmux-prefix-highlight | prefix/copy-mode 시각 표시 | `#{prefix_highlight}` |
+| tmux-plugins/tpm | Plugin manager | |
+| tmux-plugins/tmux-sensible | Sensible defaults | |
+| tmux-plugins/tmux-resurrect | Save/restore sessions | prefix + C-s / C-r |
+| tmux-plugins/tmux-cpu | CPU/RAM in status bar | `#{cpu_percentage}`, `#{ram_percentage}` |
+| tmux-plugins/tmux-battery | Battery in status bar | `#{battery_icon}`, `#{battery_percentage}` |
+| tmux-plugins/tmux-prefix-highlight | Visual indicator for prefix/copy mode | `#{prefix_highlight}` |
 
-## npm 글로벌 패키지
+## npm global packages
 
-| 패키지 | 역할 |
+| Package | Role |
 |---|---|
 | @anthropic-ai/claude-code | Claude Code CLI |
 
-## 패키지 추가 절차
+## Adding a new package
 
-1. 이 문서에 패키지 정보 추가
-2. 해당 OS 설치 스크립트에 설치 함수 추가
-3. CHANGELOG.md 에 기록
-4. 테스트: 3개 OS에서 `./install.sh` 실행 확인
+1. Document the package in this file.
+2. Add an install function in the relevant OS script (`scripts/<os>.sh`).
+3. Record the change in `CHANGELOG.md`.
+4. Test: run `./install.sh` on all three target OSes.

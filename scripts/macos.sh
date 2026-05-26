@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# macOS 패키지 설치 (Homebrew)
+# macOS package installation (Homebrew)
 
 install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -38,8 +38,9 @@ install_starship_mac() {
 }
 
 install_zsh_mac() {
-    # macOS Catalina+ 는 기본 셸이 zsh 라 보통 has_cmd 가 true → 이 함수 호출 안 됨.
-    # 명시적으로 brew zsh 가 필요한 경우 (최신 버전) 만 사용됨.
+    # macOS Catalina+ ships zsh by default, so has_cmd is normally true and
+    # this function is never called. Used only when an explicit brew-zsh
+    # (latest version) is required.
     brew install zsh
 }
 
@@ -52,12 +53,12 @@ install_tree_sitter_mac() {
 }
 
 install_packages() {
-    info "=== macOS 패키지 설치 ==="
+    info "=== macOS package installation ==="
 
     # Homebrew
     ensure_cmd "brew" install_homebrew "Homebrew"
 
-    # 핵심 도구
+    # Core tools
     ensure_cmd "nvim"  install_neovim_mac  "Neovim"
     ensure_cmd "tmux"  install_tmux_mac    "tmux"
     ensure_cmd "node"  install_node_mac    "Node.js"
@@ -66,13 +67,13 @@ install_packages() {
     ensure_cmd "jq"    install_jq_mac      "jq"
     ensure_cmd "tree-sitter" install_tree_sitter_mac "tree-sitter CLI"
 
-    # 검색 도구 (Neovim telescope 등에 필요)
+    # Search tools (used by Neovim telescope, etc.)
     ensure_cmd "rg"    install_ripgrep_mac "ripgrep"
     ensure_cmd "fd"    install_fd_mac      "fd"
     ensure_cmd "fzf"   install_fzf_mac     "fzf"
 
-    # 프롬프트
+    # Prompt
     ensure_cmd "starship" install_starship_mac "starship"
 
-    ok "macOS 패키지 설치 완료"
+    ok "macOS packages installed"
 }

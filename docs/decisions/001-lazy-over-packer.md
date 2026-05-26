@@ -1,28 +1,28 @@
-# ADR-001: lazy.nvim 선택
+# ADR-001: choose lazy.nvim
 
-## 상태: 확정
+## Status: accepted
 
-## 날짜: 2026-04-11
+## Date: 2026-04-11
 
-## 맥락
+## Context
 
-Neovim 플러그인 매니저 선택이 필요.
-주요 후보: lazy.nvim, packer.nvim, vim-plug
+We need to pick a Neovim plugin manager.
+Main candidates: lazy.nvim, packer.nvim, vim-plug
 
-## 결정
+## Decision
 
-**lazy.nvim** 을 사용한다.
+Use **lazy.nvim**.
 
-## 근거
+## Rationale
 
-- **lazy-lock.json**: 플러그인 버전을 파일로 고정하여 머신 간 동일 환경 재현
-- **lazy loading**: 기본적으로 지연 로딩, 시작 시간 최소화
-- **선언적 설정**: 각 플러그인이 독립 파일로 관리 가능 (`plugins/*.lua`)
-- **활발한 유지보수**: 2026년 기준 Neovim 커뮤니티 표준
-- packer.nvim은 유지보수 중단됨
-- vim-plug은 Lua 네이티브가 아님
+- **lazy-lock.json**: pins exact plugin versions in a file, reproducing the same environment across machines.
+- **lazy loading**: lazy-by-default, keeping startup time low.
+- **Declarative config**: each plugin lives in its own file (`plugins/*.lua`).
+- **Active maintenance**: the de-facto Neovim-community standard as of 2026.
+- packer.nvim is no longer maintained.
+- vim-plug is not Lua-native.
 
-## 영향
+## Consequences
 
-- 플러그인 추가/변경 시 `lazy-lock.json` 도 함께 커밋해야 함
-- `checker.enabled = false` 로 자동 업데이트 비활성화 → 수동 관리
+- Whenever a plugin is added or upgraded, `lazy-lock.json` must be committed alongside the change.
+- `checker.enabled = false` disables automatic update checks → updates are explicit (`:Lazy update`).

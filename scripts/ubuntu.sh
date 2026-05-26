@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Ubuntu / Debian 패키지 설치 (apt)
+# Ubuntu / Debian package installation (apt)
 
 install_neovim_ubuntu() {
-    # 안정적인 최신 버전을 위해 PPA 사용
+    # Use the stable PPA for a recent version.
     sudo apt-get install -y software-properties-common
     sudo add-apt-repository -y ppa:neovim-ppa/stable
     sudo apt-get update
@@ -30,9 +30,9 @@ install_ripgrep_ubuntu() {
 }
 
 install_fd_ubuntu() {
-    # Ubuntu에서 패키지명이 fd-find
+    # On Ubuntu the package is named fd-find.
     sudo apt-get install -y fd-find
-    # fd-find는 fdfind로 설치됨 → fd 심링크
+    # The binary is installed as fdfind — add an fd symlink.
     if has_cmd fdfind && ! has_cmd fd; then
         sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
     fi
@@ -43,7 +43,7 @@ install_fzf_ubuntu() {
 }
 
 install_starship_ubuntu() {
-    # 공식 install script (정적 바이너리를 /usr/local/bin 에 설치)
+    # Official install script (places a static binary in /usr/local/bin).
     curl -sS https://starship.rs/install.sh | sh -s -- -y
 }
 
@@ -56,7 +56,7 @@ install_jq_ubuntu() {
 }
 
 install_tree_sitter_ubuntu() {
-    # apt 에 tree-sitter CLI 없음 → GitHub 릴리스 바이너리
+    # tree-sitter CLI isn't in apt → grab the GitHub release binary.
     local ver="0.26.9"
     local url="https://github.com/tree-sitter/tree-sitter/releases/download/v${ver}/tree-sitter-linux-x64.gz"
     curl -fL "$url" -o /tmp/tree-sitter.gz
@@ -70,14 +70,14 @@ install_build_deps_ubuntu() {
 }
 
 install_packages() {
-    info "=== Ubuntu 패키지 설치 ==="
+    info "=== Ubuntu package installation ==="
 
     sudo apt-get update -qq
 
-    # 빌드 의존성
+    # Build dependencies
     install_build_deps_ubuntu
 
-    # 핵심 도구
+    # Core tools
     ensure_cmd "nvim"  install_neovim_ubuntu  "Neovim"
     ensure_cmd "tmux"  install_tmux_ubuntu    "tmux"
     ensure_cmd "node"  install_node_ubuntu    "Node.js"
@@ -86,19 +86,19 @@ install_packages() {
     ensure_cmd "jq"    install_jq_ubuntu      "jq"
     ensure_cmd "tree-sitter" install_tree_sitter_ubuntu "tree-sitter CLI"
 
-    # 검색 도구
+    # Search tools
     ensure_cmd "rg"    install_ripgrep_ubuntu "ripgrep"
     ensure_cmd "fzf"   install_fzf_ubuntu     "fzf"
 
-    # fd는 fdfind로 설치될 수 있으므로 별도 처리
+    # fd may be present under the fdfind name → handle separately.
     if has_cmd fd || has_cmd fdfind; then
-        skip "fd 이미 설치됨"
+        skip "fd already installed"
     else
         install_fd_ubuntu
     fi
 
-    # 프롬프트
+    # Prompt
     ensure_cmd "starship" install_starship_ubuntu "starship"
 
-    ok "Ubuntu 패키지 설치 완료"
+    ok "Ubuntu packages installed"
 }

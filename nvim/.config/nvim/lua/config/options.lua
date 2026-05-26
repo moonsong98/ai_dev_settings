@@ -1,21 +1,21 @@
 -- config/options.lua
--- 에디터 기본 옵션
+-- Editor default options.
 
 local opt = vim.opt
 
--- ─── 라인 넘버 ───
+-- ─── Line numbers ───
 opt.number = true
 opt.relativenumber = true
 opt.signcolumn = "yes"
 
--- ─── 들여쓰기 ───
+-- ─── Indentation ───
 opt.tabstop = 4
 opt.shiftwidth = 4
 opt.softtabstop = 4
 opt.expandtab = true
 opt.smartindent = true
 
--- ─── 검색 ───
+-- ─── Search ───
 opt.ignorecase = true
 opt.smartcase = true
 opt.hlsearch = true
@@ -31,24 +31,24 @@ opt.showmode = false
 opt.splitbelow = true
 opt.splitright = true
 opt.mouse = "a"
--- modified 버퍼 두고 나가려 할 때 E37 대신 "Save? Y/n/c" prompt
+-- Replace the E37 "no write since last change" error with a "Save? Y/n/c" prompt.
 opt.confirm = true
 
--- ─── 파일 ───
+-- ─── Files ───
 opt.swapfile = false
 opt.backup = false
 opt.undofile = true
 opt.undodir = vim.fn.stdpath("state") .. "/undo"
 opt.fileencoding = "utf-8"
 
--- ─── 자동 리로드 (Claude Code 등 외부 변경 감지) ───
+-- ─── Auto-reload (catch external changes from Claude Code, etc.) ───
 opt.autoread = true
 opt.updatetime = 250
 
--- ─── 완성 ───
+-- ─── Completion ───
 opt.completeopt = { "menu", "menuone", "noselect" }
 
--- ─── 클립보드 (OS별 자동 감지) ───
+-- ─── Clipboard (auto-detect per OS) ───
 if vim.fn.has("mac") == 1 then
     opt.clipboard = "unnamedplus"
 elseif vim.fn.has("wsl") == 1 then
@@ -68,6 +68,6 @@ else
     opt.clipboard = "unnamedplus"
 end
 
--- ─── Leader 키 ───
+-- ─── Leader key ───
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
