@@ -27,6 +27,17 @@ if [ -d "$HOME/.local/bin" ]; then
     esac
 fi
 
+# ─── npm user-global prefix (used when /usr/local isn't writable) ───
+# install.sh sets `npm config set prefix ~/.npm-global` on systems where
+# the system npm prefix is root-owned, so user-installed CLIs (e.g.
+# @anthropic-ai/claude-code) land here.
+if [ -d "$HOME/.npm-global/bin" ]; then
+    case ":$PATH:" in
+        *":$HOME/.npm-global/bin:"*) ;;
+        *) PATH="$HOME/.npm-global/bin:$PATH" ;;
+    esac
+fi
+
 export PATH
 
 # ─── Default editor (used by git, crontab, fc, ssh, …) ───

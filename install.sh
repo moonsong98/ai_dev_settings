@@ -206,6 +206,47 @@ install_tpm() {
 }
 
 # ─────────────────────────────────────────────
+# Claude Code CLI (npm global)
+# ─────────────────────────────────────────────
+# When node is installed via the system package manager, the npm global
+# prefix (`/usr/local`) is root-owned and `npm i -g` fails with EACCES for
+# regular users. Detect that and fall back to a user-local prefix at
+# ~/.npm-global, which profile-addon.sh adds to PATH.
+install_claude_code() {
+    if has_cmd claude; then
+        skip "Claude Code CLI already installed"
+        return
+    fi
+
+    if ! has_cmd npm; then
+        warn "npm not found — install Claude Code manually"
+        return
+    fi
+
+    local npm_prefix
+    npm_prefix=$(npm config get prefix 2>/dev/null || echo "")
+
+    if [ -n "$npm_prefix" ] && [ ! -w "$npm_prefix/lib/node_modules" ] && [ ! -w "$npm_prefix/lib" ]; then
+        warn "npm global prefix ${npm_prefix} is not user-writable."
+        info "Switching npm prefix to ~/.npm-global (no sudo required)."
+        mkdir -p "${HOME}/.npm-global"
+        npm config set prefix "${HOME}/.npm-global"
+        # Make this PATH change effective for the rest of this script run too.
+        export PATH="${HOME}/.npm-global/bin:${PATH}"
+    fi
+
+    info "Installing Claude Code CLI..."
+    if npm install -g @anthropic-ai/claude-code; then
+        ok "Claude Code installed — run 'claude' to authenticate"
+    else
+        error "Claude Code install failed — see npm error above."
+        warn "If this is a permissions error, try one of:"
+        warn "  sudo npm install -g @anthropic-ai/claude-code"
+        warn "  or install node via nvm/volta so npm runs unprivileged"
+    fi
+}
+
+# ─────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────
 main() {
@@ -235,18 +276,7 @@ main() {
     install_oh_my_zsh
     install_tpm
 
-    # Claude Code (npm global).
-    if has_cmd claude; then
-        skip "Claude Code CLI already installed"
-    else
-        if has_cmd npm; then
-            info "Installing Claude Code CLI..."
-            npm install -g @anthropic-ai/claude-code
-            ok "Claude Code installed — run 'claude' to authenticate"
-        else
-            warn "npm not found — install Claude Code manually"
-        fi
-    fi
+    install_claude_code
 
     echo ""
     ok "Install complete!"
