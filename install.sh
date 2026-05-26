@@ -254,9 +254,12 @@ install_tpm() {
     # Idempotently install the plugins declared in tmux.conf.
     if [ -x "${tpm_dir}/scripts/install_plugins.sh" ]; then
         info "Installing tmux plugins..."
-        "${tpm_dir}/scripts/install_plugins.sh" >/dev/null 2>&1 || \
+        if "${tpm_dir}/scripts/install_plugins.sh" >/dev/null 2>&1; then
+            ok "tmux plugins installed"
+        else
             warn "tmux plugin install failed — retry inside tmux with prefix + I"
-        ok "tmux plugins installed"
+            warn "  or run: ~/.config/tmux/plugins/tpm/bin/install_plugins"
+        fi
     fi
 }
 
