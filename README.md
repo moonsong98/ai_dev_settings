@@ -30,6 +30,22 @@ cd ~/ai_dev_settings
 
 `install.sh` auto-detects the OS, skips packages already present, and is idempotent — safe to re-run after pulling updates.
 
+### Dual-account setup (e.g. Naver `irteam` / `irteamsu`)
+
+When system packages need `sudo` but your daily-use account doesn't have it (e.g. `irteam` is your home/workspace, `irteamsu` is the sudo-enabled sibling), split the install into two phases:
+
+```bash
+# 1. As the sudo-enabled account — system packages only.
+sudo -i -u irteamsu
+cd <repo>; ./install.sh --packages-only
+exit
+
+# 2. Back as your normal account — dotfiles into your $HOME.
+cd <repo>; ./install.sh --user-only
+```
+
+Run `./install.sh --help` for flag details.
+
 ### What `install.sh` does to your files
 
 | Tool | What happens | Reversible? |

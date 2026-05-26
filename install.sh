@@ -6,6 +6,47 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${DOTFILES_DIR}/scripts/common.sh"
 
 # ─────────────────────────────────────────────
+# CLI flags
+# ─────────────────────────────────────────────
+DO_PACKAGES=true   # system packages: needs sudo on Linux
+DO_USER=true       # dotfiles, oh-my-zsh, TPM, claude-code: all in $HOME
+
+usage() {
+    cat <<EOF
+Usage: ./install.sh [FLAG]
+
+Without flags, runs the full install: system packages + user-level setup.
+
+Flags:
+  --packages-only   Install system packages only (needs sudo on Linux).
+                    Use this from a privileged account (e.g. irteamsu).
+  --user-only       Install user-level setup only (dotfiles + ~/.npm-global
+                    + oh-my-zsh + TPM + claude-code). No sudo required.
+                    Use this from your regular account (e.g. irteam) after
+                    a sibling account has already run --packages-only.
+  --help, -h        Show this help and exit.
+
+Naver-style dual-account workflow (irteam + irteamsu):
+  # 1. As irteamsu (has sudo) — install system packages.
+  sudo -i -u irteamsu
+  cd <repo>; ./install.sh --packages-only
+  exit
+
+  # 2. As irteam (your normal user) — install dotfiles into your \$HOME.
+  cd <repo>; ./install.sh --user-only
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --packages-only) DO_USER=false; shift ;;
+        --user-only)     DO_PACKAGES=false; shift ;;
+        -h|--help)       usage; exit 0 ;;
+        *)               error "Unknown flag: $1"; usage; exit 1 ;;
+    esac
+done
+
+# ─────────────────────────────────────────────
 # OS detection
 # ─────────────────────────────────────────────
 detect_os() {
@@ -260,34 +301,47 @@ main() {
     local os
     os=$(detect_os)
     info "Detected OS: ${os}"
+    info "Running as: $(whoami)  HOME=${HOME}"
 
-    # OS-specific package install.
-    case "$os" in
-        macos)  source "${DOTFILES_DIR}/scripts/macos.sh"  ;;
-        ubuntu) source "${DOTFILES_DIR}/scripts/ubuntu.sh" ;;
-        centos) source "${DOTFILES_DIR}/scripts/centos.sh" ;;
-    esac
+    if $DO_PACKAGES; then
+        info "── Phase 1/2: system packages ──"
+        case "$os" in
+            macos)  source "${DOTFILES_DIR}/scripts/macos.sh"  ;;
+            ubuntu) source "${DOTFILES_DIR}/scripts/ubuntu.sh" ;;
+            centos) source "${DOTFILES_DIR}/scripts/centos.sh" ;;
+        esac
+        install_packages
+    else
+        skip "── Phase 1/2: system packages — skipped (--user-only) ──"
+    fi
 
-    install_packages
-
-    # Shared config.
-    link_configs
-    install_zsh_addons
-    install_oh_my_zsh
-    install_tpm
-
-    install_claude_code
+    if $DO_USER; then
+        info "── Phase 2/2: user-level setup (writes under \$HOME) ──"
+        link_configs
+        install_zsh_addons
+        install_oh_my_zsh
+        install_tpm
+        install_claude_code
+    else
+        skip "── Phase 2/2: user-level setup — skipped (--packages-only) ──"
+    fi
 
     echo ""
     ok "Install complete!"
     echo ""
-    info "Next steps:"
-    echo "  0. Make zsh your default shell: chsh -s \"\$(command -v zsh)\"  (needs root/sudo)"
-    echo "  1. Restart your terminal, or: source ~/.zshrc"
-    echo "  2. Launch nvim → lazy.nvim will auto-install plugins"
-    echo "  3. Launch tmux → TPM plugins are already installed (prefix + I only re-installs)"
-    echo "  4. Run 'claude' → OAuth authentication"
-    echo ""
+    if $DO_USER; then
+        info "Next steps:"
+        echo "  0. Make zsh your default shell: chsh -s \"\$(command -v zsh)\"  (needs root/sudo)"
+        echo "  1. Restart your terminal, or: source ~/.zshrc"
+        echo "  2. Launch nvim → lazy.nvim will auto-install plugins"
+        echo "  3. Launch tmux → TPM plugins are already installed (prefix + I only re-installs)"
+        echo "  4. Run 'claude' → OAuth authentication"
+        echo ""
+    else
+        info "System packages are in place."
+        info "Now switch to your regular user and run:  ./install.sh --user-only"
+        echo ""
+    fi
 }
 
 main "$@"
