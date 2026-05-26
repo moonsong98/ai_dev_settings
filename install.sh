@@ -18,11 +18,27 @@ detect_os() {
             if [ -f /etc/os-release ]; then
                 . /etc/os-release
                 case "$ID" in
-                    ubuntu|debian)  os="ubuntu" ;;
-                    centos|rhel|rocky|alma)  os="centos" ;;
+                    ubuntu|debian)
+                        os="ubuntu" ;;
+                    centos|rhel|rocky|alma|fedora|amzn|ol|navix)
+                        os="centos" ;;
                     *)
-                        warn "Unknown Linux distribution: $ID — trying the ubuntu script."
-                        os="ubuntu"
+                        # Fall back to ID_LIKE so derivatives ("ID_LIKE=rhel
+                        # centos fedora") still pick the right installer.
+                        case "${ID_LIKE:-}" in
+                            *debian*|*ubuntu*)
+                                warn "Unknown distribution $ID — using the ubuntu script (matched ID_LIKE=$ID_LIKE)."
+                                os="ubuntu"
+                                ;;
+                            *rhel*|*centos*|*fedora*)
+                                warn "Unknown distribution $ID — using the centos script (matched ID_LIKE=$ID_LIKE)."
+                                os="centos"
+                                ;;
+                            *)
+                                warn "Unknown Linux distribution: $ID — defaulting to the ubuntu script."
+                                os="ubuntu"
+                                ;;
+                        esac
                         ;;
                 esac
             fi

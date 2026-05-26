@@ -10,10 +10,12 @@ readonly YELLOW='\033[0;33m'
 readonly BLUE='\033[0;34m'
 readonly NC='\033[0m' # No Color
 
-info()  { echo -e "${BLUE}[INFO]${NC}  $*"; }
-ok()    { echo -e "${GREEN}[OK]${NC}    $*"; }
-warn()  { echo -e "${YELLOW}[SKIP]${NC}  $*"; }
-skip()  { echo -e "${YELLOW}[SKIP]${NC}  $*"; }
+# All log helpers write to stderr so they don't pollute the stdout of
+# value-returning functions like detect_os (which uses `echo` as its return).
+info()  { echo -e "${BLUE}[INFO]${NC}  $*" >&2; }
+ok()    { echo -e "${GREEN}[OK]${NC}    $*" >&2; }
+warn()  { echo -e "${YELLOW}[WARN]${NC}  $*" >&2; }
+skip()  { echo -e "${YELLOW}[SKIP]${NC}  $*" >&2; }
 error() { echo -e "${RED}[ERR]${NC}   $*" >&2; }
 
 # ─────────────────────────────────────────────
